@@ -1,0 +1,350 @@
+/* ============================================================
+   StackPilot — custom layer on top of Tailwind CDN
+   ============================================================ */
+
+/* ---------- Scrollbars ---------- */
+.panel-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #30363D transparent;
+}
+.panel-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
+.panel-scroll::-webkit-scrollbar-track { background: transparent; }
+.panel-scroll::-webkit-scrollbar-thumb {
+  background: #30363D;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+.panel-scroll::-webkit-scrollbar-thumb:hover { background-color: #484F58; background-clip: content-box; }
+
+/* ---------- Left panel bits ---------- */
+.section-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8B949E;
+}
+
+.mode-btn { color: #8B949E; border: 1px solid transparent; }
+.mode-btn.mode-active {
+  background: #161B22;
+  color: #00FFFF;
+  border: 1px solid rgba(0, 255, 255, 0.35);
+  box-shadow: 0 0 14px rgba(0, 255, 255, 0.08) inset, 0 0 10px rgba(0, 255, 255, 0.06);
+}
+
+#stack-menu li[role="option"] {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  color: #E6EDF3;
+  border-left: 2px solid transparent;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+#stack-menu li[role="option"]:hover,
+#stack-menu li[role="option"].focused { background: rgba(0, 255, 255, 0.06); border-left-color: #00FFFF; }
+#stack-menu li[role="option"][aria-selected="true"] { color: #00FFFF; }
+#stack-menu li .opt-dot { width: 8px; height: 8px; border-radius: 9999px; flex-shrink: 0; }
+#stack-menu li .opt-sub { margin-left: auto; font-family: "JetBrains Mono", monospace; font-size: 10px; color: #8B949E; }
+
+/* ---------- Generated content typography ---------- */
+.blk { animation: rise-in 480ms cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.blk-h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: #E6EDF3;
+  margin-top: 2.4rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid rgba(48, 54, 61, 0.8);
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+.blk-h2 .h-index {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #00FFFF;
+  opacity: 0.85;
+}
+.blk-h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #E6EDF3;
+  margin-top: 1.9rem;
+}
+.blk-p {
+  font-size: 0.905rem;
+  line-height: 1.85;
+  color: rgba(230, 237, 243, 0.86);
+  margin-top: 1.1rem;
+}
+.blk-p strong { color: #E6EDF3; font-weight: 600; }
+.blk-p .inline-code,
+.blk-list .inline-code,
+.callout-body .inline-code {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.8em;
+  background: #161B22;
+  border: 1px solid #30363D;
+  border-radius: 5px;
+  padding: 0.12em 0.42em;
+  color: #7EE787;
+  white-space: nowrap;
+}
+
+/* Lists */
+.blk-list { margin-top: 1.1rem; display: flex; flex-direction: column; gap: 0.65rem; }
+.blk-list li {
+  position: relative;
+  padding-left: 1.9rem;
+  font-size: 0.9rem;
+  line-height: 1.75;
+  color: rgba(230, 237, 243, 0.86);
+}
+.blk-list.is-ordered { counter-reset: sp-step; }
+.blk-list.is-ordered li { counter-increment: sp-step; }
+.blk-list.is-ordered li::before {
+  content: counter(sp-step);
+  position: absolute;
+  left: 0;
+  top: 0.22rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  display: grid;
+  place-items: center;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #00FFFF;
+  background: rgba(0, 255, 255, 0.06);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  border-radius: 6px;
+}
+.blk-list.is-unordered li::before {
+  content: "";
+  position: absolute;
+  left: 0.35rem;
+  top: 0.72rem;
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: #00FFFF;
+  opacity: 0.7;
+}
+
+/* ---------- Citations ---------- */
+.cite-chip {
+  display: inline-grid;
+  place-items: center;
+  vertical-align: super;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 4px;
+  margin: 0 2px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 9.5px;
+  font-weight: 700;
+  line-height: 1;
+  color: #00FFFF;
+  background: rgba(0, 255, 255, 0.07);
+  border: 1px solid rgba(0, 255, 255, 0.4);
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 130ms ease, box-shadow 130ms ease, transform 130ms ease;
+}
+.cite-chip:hover { background: rgba(0, 255, 255, 0.18); box-shadow: 0 0 10px rgba(0, 255, 255, 0.25); transform: translateY(-1px); }
+
+/* ---------- Code containers ---------- */
+.code-block {
+  margin-top: 1.4rem;
+  border: 1px solid #30363D;
+  border-radius: 10px;
+  background: #0A0E14;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+.code-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px 8px 16px;
+  background: #10151D;
+  border-bottom: 1px solid #21262D;
+}
+.code-head .code-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  color: #8B949E;
+  min-width: 0;
+}
+.code-head .code-label .lang-pill {
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #00FFFF;
+  background: rgba(0, 255, 255, 0.07);
+  border: 1px solid rgba(0, 255, 255, 0.28);
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+.copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: "JetBrains Mono", monospace;
+  color: #8B949E;
+  background: transparent;
+  border: 1px solid #30363D;
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: all 130ms ease;
+  flex-shrink: 0;
+}
+.copy-btn:hover { color: #E6EDF3; border-color: #484F58; }
+.copy-btn.copied { color: #00FFFF; border-color: rgba(0, 255, 255, 0.45); background: rgba(0, 255, 255, 0.06); }
+.code-block pre {
+  padding: 16px;
+  overflow-x: auto;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12.5px;
+  line-height: 1.7;
+  scrollbar-width: thin;
+  scrollbar-color: #30363D transparent;
+}
+.code-block pre::-webkit-scrollbar { height: 8px; }
+.code-block pre::-webkit-scrollbar-thumb { background: #30363D; border-radius: 8px; }
+.code-block code { color: #C9D1D9; }
+
+/* Syntax tokens (GitHub-dark adjacent) */
+.tok-com { color: #8B949E; font-style: italic; }
+.tok-str { color: #A5D6FF; }
+.tok-kw  { color: #FF7B72; }
+.tok-fn  { color: #D2A8FF; }
+.tok-num { color: #79C0F0; }
+
+/* ---------- Concept callouts ---------- */
+.callout {
+  margin-top: 1.4rem;
+  border: 1px solid rgba(0, 255, 255, 0.22);
+  border-left: 3px solid #00FFFF;
+  background: linear-gradient(135deg, rgba(0, 255, 255, 0.045), rgba(0, 255, 255, 0.012) 55%), #161B22;
+  border-radius: 10px;
+  padding: 14px 18px 15px;
+}
+.callout-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #00FFFF;
+}
+.callout-body {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  line-height: 1.75;
+  color: rgba(230, 237, 243, 0.82);
+}
+
+/* ---------- Source cards ---------- */
+.source-card {
+  border: 1px solid #30363D;
+  background: #161B22;
+  border-radius: 10px;
+  padding: 13px 14px;
+  transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+  animation: rise-in 420ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.source-card:hover { border-color: #484F58; }
+.source-card.cite-flash {
+  border-color: rgba(0, 255, 255, 0.75);
+  box-shadow: 0 0 0 1px rgba(0, 255, 255, 0.35), 0 0 26px rgba(0, 255, 255, 0.14);
+  animation: flash-pulse 1.6s ease-out both;
+}
+@keyframes flash-pulse {
+  0%   { background: rgba(0, 255, 255, 0.11); transform: scale(1.015); }
+  60%  { background: rgba(0, 255, 255, 0.05); }
+  100% { background: #161B22; transform: scale(1); }
+}
+
+.file-tag {
+  display: inline-grid;
+  place-items: center;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #00FFFF;
+  background: rgba(0, 255, 255, 0.07);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  border-radius: 4px;
+  padding: 2.5px 7px;
+  flex-shrink: 0;
+}
+
+.view-docs-btn {
+  width: 100%;
+  margin-top: 11px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #8B949E;
+  border: 1px solid #30363D;
+  border-radius: 7px;
+  padding: 6px 10px;
+  cursor: pointer;
+  background: transparent;
+  transition: all 140ms ease;
+}
+.view-docs-btn:hover { color: #00FFFF; border-color: rgba(0, 255, 255, 0.45); background: rgba(0, 255, 255, 0.05); }
+
+/* ---------- Skeleton loading ---------- */
+.skel {
+  position: relative;
+  overflow: hidden;
+  background: #161B22;
+  border-radius: 8px;
+}
+.skel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(230, 237, 243, 0.055), rgba(0, 255, 255, 0.05), transparent);
+  animation: shimmer 1.4s infinite;
+}
+@keyframes shimmer { 100% { transform: translateX(100%); } }
+
+/* ---------- Modal doc rendering ---------- */
+.md-h { color: #00FFFF; font-weight: 600; }
+.md-code { color: #7EE787; }
+.md-quote { color: #8B949E; font-style: italic; }
+
+/* ---------- Toast ---------- */
+#toast.show { display: block; animation: rise-in 260ms ease both; }

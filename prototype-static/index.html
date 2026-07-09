@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StackPilot — AI Framework Masterclass</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            canvas: '#0D1117',
+            card:   '#161B22',
+            edge:   '#30363D',
+            ink:    '#E6EDF3',
+            muted:  '#8B949E',
+            neon:   '#00FFFF',
+            neondim:'#00CCCC',
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+          },
+          boxShadow: {
+            'neon':      '0 0 0 1px rgba(0,255,255,.35), 0 0 24px rgba(0,255,255,.12)',
+            'neon-soft': '0 0 16px rgba(0,255,255,.10)',
+          },
+        },
+      },
+    };
+  </script>
+
+  <link rel="stylesheet" href="styles/main.css" />
+</head>
+
+<body class="bg-canvas text-ink font-sans antialiased h-screen overflow-y-auto lg:overflow-hidden selection:bg-neon/20 selection:text-neon">
+
+  <div class="flex flex-col lg:flex-row h-full min-h-0">
+
+    <!-- ============================================================ -->
+    <!-- PANEL 1 · Context & Configuration                            -->
+    <!-- ============================================================ -->
+    <aside class="w-full lg:w-1/4 lg:min-w-[300px] flex flex-col border-b lg:border-b-0 lg:border-r border-edge bg-card/40 lg:h-full lg:overflow-y-auto panel-scroll">
+
+      <!-- Brand -->
+      <header class="px-6 pt-7 pb-6 border-b border-edge/70">
+        <div class="flex items-center gap-3">
+          <div class="relative h-10 w-10 shrink-0 rounded-xl bg-canvas border border-neon/40 shadow-neon-soft grid place-items-center">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M13 2 4.5 13.5H11L9.5 22 19 9.5h-6.5L13 2Z" fill="#00FFFF" opacity="0.95"/>
+            </svg>
+            <span class="absolute -inset-px rounded-xl ring-1 ring-neon/20 animate-pulse pointer-events-none"></span>
+          </div>
+          <div>
+            <h1 class="text-lg font-bold tracking-tight leading-none">
+              Stack<span class="text-neon">Pilot</span>
+            </h1>
+            <p class="text-[11px] text-muted mt-1.5 tracking-[0.14em] uppercase">AI Framework Masterclass</p>
+          </div>
+        </div>
+      </header>
+
+      <div class="flex-1 px-6 py-6 space-y-7">
+
+        <!-- Active Stack Selector -->
+        <section>
+          <label class="section-label">Active Stack</label>
+          <div class="relative mt-2.5" id="stack-dropdown">
+            <button id="stack-btn" type="button"
+              class="w-full flex items-center justify-between gap-3 rounded-lg bg-card border border-edge px-3.5 py-2.5 text-sm font-medium hover:border-muted/60 focus:outline-none focus:border-neon/60 focus:shadow-neon-soft transition-colors"
+              aria-haspopup="listbox" aria-expanded="false">
+              <span class="flex items-center gap-2.5 min-w-0">
+                <span id="stack-dot" class="h-2 w-2 rounded-full shrink-0" style="background:#E6EDF3"></span>
+                <span id="stack-label" class="truncate">Next.js (App Router)</span>
+              </span>
+              <svg id="stack-chevron" class="h-4 w-4 text-muted transition-transform duration-200 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <ul id="stack-menu" role="listbox"
+              class="absolute z-30 mt-2 w-full rounded-lg bg-card border border-edge shadow-2xl shadow-black/50 overflow-hidden hidden">
+              <!-- options injected by app.js -->
+            </ul>
+          </div>
+        </section>
+
+        <!-- Mode Toggle -->
+        <section>
+          <label class="section-label">Masterclass Mode</label>
+          <div id="mode-toggle" class="mt-2.5 grid grid-cols-2 gap-1 rounded-lg bg-canvas border border-edge p-1" role="tablist">
+            <button type="button" data-mode="deep-dive" role="tab" aria-selected="true"
+              class="mode-btn mode-active rounded-md px-2 py-2 text-[12px] font-semibold transition-all">
+              Architectural<br class="hidden lg:block xl:hidden" /> Deep&#8209;Dive
+            </button>
+            <button type="button" data-mode="code-first" role="tab" aria-selected="false"
+              class="mode-btn rounded-md px-2 py-2 text-[12px] font-semibold text-muted transition-all">
+              Code&#8209;First<br class="hidden lg:block xl:hidden" /> Tutorial
+            </button>
+          </div>
+        </section>
+
+        <!-- Goal -->
+        <section>
+          <label for="goal-input" class="section-label">Learning Goal</label>
+          <textarea id="goal-input" rows="6"
+            class="mt-2.5 w-full resize-none rounded-lg bg-card border border-edge px-3.5 py-3 text-sm leading-relaxed placeholder:text-muted/60 focus:outline-none focus:border-neon/60 focus:shadow-neon-soft transition-colors panel-scroll"
+            placeholder="e.g., Explain how to set up multi-tenant row-level security using Neon pgvector and Next.js..."></textarea>
+        </section>
+
+        <!-- Action -->
+        <button id="generate-btn" type="button"
+          class="group w-full rounded-lg bg-neon text-canvas font-bold text-sm py-3 px-4 flex items-center justify-center gap-2 hover:bg-neondim active:scale-[.985] focus:outline-none focus-visible:shadow-neon transition-all disabled:opacity-60 disabled:cursor-not-allowed">
+          <svg id="gen-icon" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4.5 13.5H11L9.5 22 19 9.5h-6.5L13 2Z"/></svg>
+          <svg id="gen-spinner" class="h-4 w-4 animate-spin hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.2-8.56"/></svg>
+          <span id="gen-label">Generate Masterclass Path</span>
+        </button>
+
+        <!-- Gemini key (optional) -->
+        <section class="rounded-lg border border-edge/70 bg-canvas/60 p-3.5">
+          <div class="flex items-center justify-between">
+            <label for="gemini-key" class="text-[11px] font-semibold tracking-[0.12em] uppercase text-muted">Gemini API Key</label>
+            <span class="text-[10px] text-muted/70 font-mono">free tier · via .env</span>
+          </div>
+          <input id="gemini-key" type="password" autocomplete="off" spellcheck="false"
+            class="mt-2 w-full rounded-md bg-card border border-edge px-3 py-2 text-xs font-mono placeholder:text-muted/50 focus:outline-none focus:border-neon/60 transition-colors"
+            placeholder="loading key from .env…" />
+          <p class="mt-2 text-[11px] leading-relaxed text-muted/80">
+            The key is read from <span class="font-mono text-ink/80">.env</span> (<span class="font-mono text-ink/80">GEMINI_API_KEY</span>). Paste here only to override for this session. Generation calls <span class="font-mono text-ink/80">gemini-3.5-flash</span> live.
+          </p>
+        </section>
+      </div>
+
+      <footer class="px-6 py-4 border-t border-edge/70 flex items-center justify-between text-[11px] text-muted/70">
+        <span class="font-mono">v0.1.0</span>
+        <span class="flex items-center gap-1.5"><span id="engine-dot" class="h-1.5 w-1.5 rounded-full bg-neon shadow-neon-soft"></span><span id="engine-label">loading .env…</span></span>
+      </footer>
+    </aside>
+
+    <!-- ============================================================ -->
+    <!-- PANEL 2 · Generated Masterclass Workspace                    -->
+    <!-- ============================================================ -->
+    <main class="w-full lg:w-1/2 flex flex-col lg:h-full min-h-[60vh] bg-canvas">
+      <div class="shrink-0 flex items-center justify-between px-7 py-3.5 border-b border-edge/70 bg-canvas/90 backdrop-blur">
+        <div class="flex items-center gap-2.5">
+          <h2 class="text-[13px] font-semibold tracking-wide text-ink/90">Masterclass Workspace</h2>
+          <span id="workspace-status" class="hidden text-[10px] font-mono px-2 py-0.5 rounded-full border border-neon/30 text-neon bg-neon/5">generated</span>
+        </div>
+        <span id="workspace-meta" class="text-[11px] text-muted font-mono truncate max-w-[50%]"></span>
+      </div>
+
+      <div id="feed" class="flex-1 overflow-y-auto panel-scroll px-7 lg:px-10 py-8">
+        <!-- Empty state -->
+        <div id="feed-empty" class="h-full min-h-[380px] flex flex-col items-center justify-center text-center gap-4">
+          <div class="h-14 w-14 rounded-2xl border border-edge bg-card grid place-items-center">
+            <svg class="h-6 w-6 text-neon/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/><circle cx="12" cy="12" r="3.2"/></svg>
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-ink/90">Your masterclass renders here</p>
+            <p class="mt-1.5 text-[13px] text-muted max-w-sm leading-relaxed">Pick a stack, describe a learning goal on the left, and hit <span class="text-neon font-medium">Generate Masterclass Path</span>.</p>
+          </div>
+        </div>
+        <!-- Skeleton + content injected by app.js -->
+        <div id="feed-content" class="max-w-[720px] mx-auto"></div>
+      </div>
+    </main>
+
+    <!-- ============================================================ -->
+    <!-- PANEL 3 · RAG Source Verification Sidebar                    -->
+    <!-- ============================================================ -->
+    <aside class="w-full lg:w-1/4 lg:min-w-[290px] flex flex-col border-t lg:border-t-0 lg:border-l border-edge bg-card/40 lg:h-full min-h-[40vh]">
+      <div class="shrink-0 flex items-center justify-between px-5 py-3.5 border-b border-edge/70">
+        <h2 class="text-[13px] font-semibold tracking-wide text-ink/90 flex items-center gap-2">
+          <svg class="h-3.5 w-3.5 text-neon/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+          RAG Sources
+        </h2>
+        <span id="source-count" class="text-[10px] font-mono text-muted border border-edge rounded-full px-2 py-0.5">0 retrieved</span>
+      </div>
+
+      <div id="sources" class="flex-1 overflow-y-auto panel-scroll px-4 py-4 space-y-3">
+        <div id="sources-empty" class="h-full min-h-[240px] flex flex-col items-center justify-center text-center gap-3 px-4">
+          <svg class="h-8 w-8 text-muted/50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          <p class="text-[12px] text-muted leading-relaxed">Retrieved documentation chunks will appear here, matched to inline citations like <button class="cite-chip pointer-events-none">1</button> in the workspace.</p>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- Source Viewer Modal                                          -->
+  <!-- ============================================================ -->
+  <div id="doc-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 sm:p-8" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div id="modal-backdrop" class="absolute inset-0 bg-black/70 backdrop-blur-sm opacity-0 transition-opacity duration-200"></div>
+    <div id="modal-card" class="relative w-full max-w-3xl max-h-[85vh] flex flex-col rounded-xl bg-card border border-edge shadow-2xl shadow-black/60 opacity-0 translate-y-3 scale-[.98] transition-all duration-200">
+      <div class="shrink-0 flex items-center justify-between gap-4 px-5 py-4 border-b border-edge">
+        <div class="min-w-0">
+          <div class="flex items-center gap-2.5">
+            <span id="modal-tag" class="file-tag">MD</span>
+            <h3 id="modal-title" class="text-sm font-semibold truncate">Source document</h3>
+          </div>
+          <p id="modal-origin" class="mt-1 text-[11px] font-mono text-muted truncate"></p>
+        </div>
+        <button id="modal-close" type="button" class="shrink-0 h-8 w-8 grid place-items-center rounded-md border border-edge text-muted hover:text-ink hover:border-muted/60 focus:outline-none focus-visible:border-neon/60 transition-colors" aria-label="Close">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="flex-1 overflow-y-auto panel-scroll bg-canvas rounded-b-xl">
+        <pre id="modal-body" class="p-5 text-[12.5px] leading-[1.75] font-mono whitespace-pre-wrap break-words text-ink/85"></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="fixed bottom-5 right-5 z-[60] hidden max-w-sm rounded-lg border border-edge bg-card px-4 py-3 text-[12.5px] text-ink/90 shadow-2xl shadow-black/50"></div>
+
+  <script src="scripts/data.js"></script>
+  <script src="scripts/gemini.js"></script>
+  <script src="scripts/app.js"></script>
+</body>
+</html>
