@@ -20,6 +20,8 @@ interface Props {
   citeIds: number[];
   onCite: (id: number) => void;
   onGenerate: () => void;
+  /** display classes from the page (mobile tab visibility); must include flex/hidden */
+  className?: string;
 }
 
 function Skeleton() {
@@ -43,19 +45,19 @@ function Skeleton() {
   );
 }
 
-export default function Workspace({ status, markdown, error, framework, compareTo, onCompareTo, mode, generatedMode, trace, citeIds, onCite, onGenerate }: Props) {
+export default function Workspace({ status, markdown, error, framework, compareTo, onCompareTo, mode, generatedMode, trace, citeIds, onCite, onGenerate, className = "flex" }: Props) {
   const busy = status === "loading" || status === "streaming";
   const staleMode = status === "done" && generatedMode !== null && generatedMode !== mode;
   const isComparison = mode === "comparison";
 
   return (
-    <main className="relative w-1/2 flex flex-col h-full bg-canvas border-r border-edge">
+    <main className={`${className} relative w-full lg:w-1/2 flex-col h-full bg-canvas lg:border-r border-edge`}>
       {/* Ambient hero glow */}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-72 bg-[radial-gradient(60%_100%_at_50%_0%,rgba(124,58,237,0.12),transparent_70%)]" />
 
       {/* Header */}
       <div className="relative shrink-0 border-b border-edge/70 bg-canvas/80 backdrop-blur-sm">
-        <div className="flex items-center justify-between px-7 py-3.5">
+        <div className="flex items-center justify-between gap-3 px-4 sm:px-7 py-3.5">
           <div className="flex items-center gap-2.5">
             <h2 className="text-[13px] font-semibold tracking-wide text-ink/90">Masterclass Workspace</h2>
             {status === "streaming" && (
@@ -88,7 +90,7 @@ export default function Workspace({ status, markdown, error, framework, compareT
       </div>
 
       {/* Feed */}
-      <div className="relative flex-1 overflow-y-auto panel-scroll px-7 lg:px-10 py-8">
+      <div className="relative flex-1 overflow-y-auto panel-scroll px-4 sm:px-7 lg:px-10 py-6 sm:py-8">
         <div className="max-w-[720px] mx-auto">
           {/* Comparison matchup bar — the challenger is picked here, so the
               learning goal only needs to describe the use case */}
@@ -129,7 +131,7 @@ export default function Workspace({ status, markdown, error, framework, compareT
 
           {/* Mode changed after generation — offer a one-click regenerate */}
           {staleMode && (
-            <div className="rise-in mb-6 flex items-center justify-between gap-4 rounded-xl border border-accent/35 bg-accent/[0.06] px-4 py-3">
+            <div className="rise-in mb-6 flex flex-wrap items-center justify-between gap-3 sm:gap-4 rounded-xl border border-accent/35 bg-accent/[0.06] px-4 py-3">
               <p className="text-[12.5px] leading-relaxed text-ink/85">
                 This masterclass was generated as{" "}
                 <span className="font-semibold text-accent-bright">{generatedMode ? MODE_META[generatedMode].label : ""}</span>.
@@ -149,7 +151,7 @@ export default function Workspace({ status, markdown, error, framework, compareT
           {status !== "idle" && <AgentTrace trace={trace} />}
 
           {status === "idle" && (
-            <div className="min-h-[380px] h-full flex flex-col items-center justify-center text-center gap-5 pt-24">
+            <div className="min-h-[380px] h-full flex flex-col items-center justify-center text-center gap-5 pt-10 sm:pt-24">
               <div
                 key={mode}
                 className="mode-pop text-accent-bright drop-shadow-[0_0_28px_rgba(124,58,237,0.55)]"
@@ -163,8 +165,8 @@ export default function Workspace({ status, markdown, error, framework, compareT
                 <p className="mt-2 text-[13px] text-accent-bright/80 max-w-sm leading-relaxed">{MODE_META[mode].desc}</p>
                 <p className="mt-3 text-[12.5px] text-muted max-w-sm leading-relaxed">
                   {isComparison
-                    ? "Pick the challenger stack above and describe your use case on the left — no need to name the frameworks in your goal."
-                    : "Pick a stack and describe a learning goal on the left. Retrieval runs on Neon, generation streams live from Gemini."}
+                    ? "Pick the challenger stack above and describe your use case in Setup — no need to name the frameworks in your goal."
+                    : "Pick a stack and describe a learning goal in Setup. Retrieval runs on Neon, generation streams live from Gemini."}
                 </p>
               </div>
               <span className="inline-flex items-center gap-1.5 text-[11px] font-mono text-muted border border-edge rounded-full px-2.5 py-1">

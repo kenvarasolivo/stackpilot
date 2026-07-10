@@ -23,7 +23,7 @@ export default function SourceModal({ source, onClose }: Props) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-8" role="dialog" aria-modal="true">
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-3xl max-h-[85vh] flex flex-col rounded-xl bg-card border border-edge shadow-2xl shadow-black/60 rise-in">
+      <div className="relative w-full max-w-3xl max-h-[85dvh] flex flex-col rounded-xl bg-card border border-edge shadow-2xl shadow-black/60 rise-in">
         <div className="shrink-0 flex items-center justify-between gap-4 px-5 py-4 border-b border-edge">
           <div className="min-w-0">
             <div className="flex items-center gap-2.5">

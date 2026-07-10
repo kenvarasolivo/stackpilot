@@ -54,7 +54,7 @@ export default function AgentTrace({ trace }: Props) {
                   )}
                 </span>
                 <span
-                  className={`text-[11px] font-semibold transition-colors ${
+                  className={`hidden sm:inline text-[11px] font-semibold transition-colors ${
                     s.status === "running" ? "text-accent-bright" : s.status === "done" ? "text-ink/85" : "text-muted/60"
                   }`}
                 >

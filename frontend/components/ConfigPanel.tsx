@@ -14,6 +14,8 @@ interface Props {
   onQuery: (q: string) => void;
   busy: boolean;
   onGenerate: () => void;
+  /** display classes from the page (mobile tab visibility); must include flex/hidden */
+  className?: string;
 }
 
 /** Layered-stack brand mark: a solid gradient top layer over two receding strokes. */
@@ -61,7 +63,7 @@ export function ModeIcon({ mode, size = 16 }: { mode: Mode; size?: number }) {
   );
 }
 
-export default function ConfigPanel({ framework, onFramework, mode, onMode, query, onQuery, busy, onGenerate }: Props) {
+export default function ConfigPanel({ framework, onFramework, mode, onMode, query, onQuery, busy, onGenerate, className = "flex" }: Props) {
   const [open, setOpen] = useState(false);
   const [apiUp, setApiUp] = useState<boolean | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -91,7 +93,7 @@ export default function ConfigPanel({ framework, onFramework, mode, onMode, quer
   }, []);
 
   return (
-    <aside className="w-1/4 min-w-[300px] flex flex-col border-r border-edge bg-card/40 h-full overflow-y-auto panel-scroll">
+    <aside className={`${className} w-full lg:w-1/4 lg:min-w-[300px] flex-col lg:border-r border-edge bg-card/40 h-full overflow-y-auto panel-scroll`}>
       {/* Brand */}
       <header className="relative px-6 pt-7 pb-6 border-b border-edge/70 overflow-hidden">
         <div className="pointer-events-none absolute -top-16 -left-10 h-40 w-64 bg-[radial-gradient(closest-side,rgba(124,58,237,0.16),transparent)]" />

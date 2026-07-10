@@ -9,6 +9,8 @@ interface Props {
   flash: { id: number; nonce: number } | null;
   verification: CitationCheck[];
   onView: (source: SourceDoc) => void;
+  /** display classes from the page (mobile tab visibility); must include flex/hidden */
+  className?: string;
 }
 
 function fileTag(url: string): string {
@@ -30,7 +32,7 @@ const VERDICT_STYLE: Record<CitationCheck["verdict"], { label: string; cls: stri
   unsupported: { label: "✗ unsupported", cls: "text-red-300 border-red-300/40 bg-red-300/5" },
 };
 
-export default function SourcesPanel({ status, sources, flash, verification, onView }: Props) {
+export default function SourcesPanel({ status, sources, flash, verification, onView, className = "flex" }: Props) {
   const cardRefs = useRef<Map<number, HTMLElement>>(new Map());
   const verdictById = new Map(verification.map((c) => [c.id, c]));
 
@@ -48,7 +50,7 @@ export default function SourcesPanel({ status, sources, flash, verification, onV
   }, [flash]);
 
   return (
-    <aside className="w-1/4 min-w-[290px] flex flex-col h-full bg-card/40">
+    <aside className={`${className} w-full lg:w-1/4 lg:min-w-[290px] flex-col h-full bg-card/40`}>
       <div className="shrink-0 flex items-center justify-between px-5 py-3.5 border-b border-edge/70">
         <h2 className="text-[13px] font-semibold tracking-wide text-ink/90 flex items-center gap-2">
           <svg className="h-3.5 w-3.5 text-accent/90" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
