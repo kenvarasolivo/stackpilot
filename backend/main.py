@@ -4,6 +4,7 @@ Run from /backend:  uvicorn main:app --reload --port 8000
 """
 
 import json
+import os
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -22,9 +23,18 @@ from schemas import MasterclassRequest
 
 app = FastAPI(title="StackPilot API", version="1.0.0")
 
+# Local dev origins plus any deployed frontends listed in ALLOWED_ORIGINS
+# (comma-separated, e.g. "https://your-app.vercel.app").
+_default_origins = ["http://localhost:3000", "http://127.0.0.1:3000"]
+_extra_origins = [
+    origin.strip()
+    for origin in os.environ.get("ALLOWED_ORIGINS", "").split(",")
+    if origin.strip()
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=_default_origins + _extra_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )
