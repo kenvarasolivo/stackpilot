@@ -45,7 +45,7 @@ export default function SourcesPanel({ status, sources, flash, verification, onV
     <aside className="w-1/4 min-w-[290px] flex flex-col h-full bg-card/40">
       <div className="shrink-0 flex items-center justify-between px-5 py-3.5 border-b border-edge/70">
         <h2 className="text-[13px] font-semibold tracking-wide text-ink/90 flex items-center gap-2">
-          <svg className="h-3.5 w-3.5 text-neon/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg className="h-3.5 w-3.5 text-accent/90" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
             <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z" />
           </svg>
@@ -95,14 +95,14 @@ export default function SourcesPanel({ status, sources, flash, verification, onV
           >
             <div className="flex items-start justify-between gap-2">
               <div className="flex items-center gap-2 min-w-0">
-                <span className="h-5 w-5 shrink-0 grid place-items-center rounded-md bg-canvas border border-edge font-mono text-[9.5px] font-bold text-neon">
+                <span className="h-5 w-5 shrink-0 grid place-items-center rounded-md bg-canvas border border-edge font-mono text-[9.5px] font-bold text-accent-bright">
                   {s.id}
                 </span>
                 <h3 className="text-[12.5px] font-semibold leading-snug truncate" title={s.section_title}>
                   {s.section_title}
                 </h3>
               </div>
-              <span className="shrink-0 font-mono text-[9px] font-bold tracking-[0.08em] text-neon bg-neon/5 border border-neon/30 rounded px-1.5 py-0.5">
+              <span className="shrink-0 font-mono text-[9px] font-bold tracking-[0.08em] text-accent-bright bg-accent/5 border border-accent/30 rounded px-1.5 py-0.5">
                 {fileTag(s.doc_url)}
               </span>
             </div>
@@ -110,7 +110,7 @@ export default function SourcesPanel({ status, sources, flash, verification, onV
             <div className="mt-2 flex items-center justify-between gap-2">
               <p className="text-[10px] font-mono text-muted/60 truncate">{s.doc_url}</p>
               {typeof s.relevance === "number" && (
-                <span className="shrink-0 text-[9.5px] font-mono text-neon/80" title="cosine similarity to the planned query">
+                <span className="shrink-0 text-[9.5px] font-mono text-accent/90" title="cosine similarity to the planned query">
                   {(s.relevance * 100).toFixed(0)}% match
                 </span>
               )}
@@ -126,7 +126,7 @@ export default function SourcesPanel({ status, sources, flash, verification, onV
             <button
               type="button"
               onClick={() => onView(s)}
-              className="w-full mt-2.5 inline-flex items-center justify-center gap-1.5 text-[11.5px] font-semibold text-muted border border-edge rounded-[7px] px-2.5 py-1.5 hover:text-neon hover:border-neon/45 hover:bg-neon/5 transition-all"
+              className="w-full mt-2.5 inline-flex items-center justify-center gap-1.5 text-[11.5px] font-semibold text-muted border border-edge rounded-[7px] px-2.5 py-1.5 hover:text-accent-bright hover:border-accent/45 hover:bg-accent/5 transition-all"
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" />

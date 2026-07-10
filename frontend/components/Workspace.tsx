@@ -1,7 +1,8 @@
 "use client";
 
-import type { AgentTraceState, Framework, Mode, Status } from "@/lib/types";
+import { MODE_META, type AgentTraceState, type Framework, type Mode, type Status } from "@/lib/types";
 import AgentTrace from "./AgentTrace";
+import { ModeIcon } from "./ConfigPanel";
 import MasterclassMarkdown from "./MasterclassMarkdown";
 
 interface Props {
@@ -10,9 +11,12 @@ interface Props {
   error: string | null;
   framework: Framework;
   mode: Mode;
+  /** mode the current output was generated with; null before the first run */
+  generatedMode: Mode | null;
   trace: AgentTraceState;
   citeIds: number[];
   onCite: (id: number) => void;
+  onGenerate: () => void;
 }
 
 function Skeleton() {
@@ -36,56 +40,93 @@ function Skeleton() {
   );
 }
 
-export default function Workspace({ status, markdown, error, framework, mode, trace, citeIds, onCite }: Props) {
+export default function Workspace({ status, markdown, error, framework, mode, generatedMode, trace, citeIds, onCite, onGenerate }: Props) {
   const busy = status === "loading" || status === "streaming";
+  const staleMode = status === "done" && generatedMode !== null && generatedMode !== mode;
 
   return (
-    <main className="w-1/2 flex flex-col h-full bg-canvas border-r border-edge">
+    <main className="relative w-1/2 flex flex-col h-full bg-canvas border-r border-edge">
+      {/* Ambient hero glow */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-72 bg-[radial-gradient(60%_100%_at_50%_0%,rgba(124,58,237,0.12),transparent_70%)]" />
+
       {/* Header */}
-      <div className="shrink-0 border-b border-edge/70 bg-canvas/90">
+      <div className="relative shrink-0 border-b border-edge/70 bg-canvas/80 backdrop-blur-sm">
         <div className="flex items-center justify-between px-7 py-3.5">
           <div className="flex items-center gap-2.5">
             <h2 className="text-[13px] font-semibold tracking-wide text-ink/90">Masterclass Workspace</h2>
             {status === "streaming" && (
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full border border-neon/30 text-neon bg-neon/5">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full border border-accent/30 text-accent bg-accent/5">
                 streaming
               </span>
             )}
             {status === "done" && (
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full border border-neon/30 text-neon bg-neon/5">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full border border-accent/30 text-accent bg-accent/5">
                 generated
               </span>
             )}
           </div>
-          <span className="text-[11px] text-muted font-mono truncate max-w-[50%]">
-            {status === "idle" ? "" : `${framework.label} · ${mode}`}
-          </span>
+          {/* Live selection readout — re-animates whenever the mode changes */}
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="text-[11px] text-muted font-mono truncate">{framework.label}</span>
+            <span
+              key={mode}
+              className="mode-pop shrink-0 inline-flex items-center gap-1.5 text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full border border-accent/40 text-accent-bright bg-accent/10"
+            >
+              <span className="h-1 w-1 rounded-full bg-accent" />
+              {MODE_META[mode].label}
+            </span>
+          </div>
         </div>
-        {/* Neon loading bar */}
+        {/* Loading bar */}
         <div className={`h-[2px] ${busy ? "loading-bar" : ""}`} />
       </div>
 
       {/* Feed */}
-      <div className="flex-1 overflow-y-auto panel-scroll px-7 lg:px-10 py-8">
+      <div className="relative flex-1 overflow-y-auto panel-scroll px-7 lg:px-10 py-8">
         <div className="max-w-[720px] mx-auto">
+          {/* Mode changed after generation — offer a one-click regenerate */}
+          {staleMode && (
+            <div className="rise-in mb-6 flex items-center justify-between gap-4 rounded-xl border border-accent/35 bg-accent/[0.06] px-4 py-3">
+              <p className="text-[12.5px] leading-relaxed text-ink/85">
+                This masterclass was generated as{" "}
+                <span className="font-semibold text-accent-bright">{generatedMode ? MODE_META[generatedMode].label : ""}</span>.
+                You&apos;re now on <span className="font-semibold text-accent-bright">{MODE_META[mode].label}</span> — regenerate to
+                apply it.
+              </p>
+              <button
+                type="button"
+                onClick={onGenerate}
+                className="shrink-0 text-[11.5px] font-semibold rounded-lg border border-accent/50 text-accent-bright bg-accent/10 px-3 py-1.5 hover:bg-accent/20 transition-colors"
+              >
+                Regenerate
+              </button>
+            </div>
+          )}
+
           {status !== "idle" && <AgentTrace trace={trace} />}
 
           {status === "idle" && (
-            <div className="min-h-[380px] h-full flex flex-col items-center justify-center text-center gap-4 pt-24">
-              <div className="h-14 w-14 rounded-2xl border border-edge bg-card grid place-items-center">
-                <svg className="h-6 w-6 text-neon/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1" />
-                  <circle cx="12" cy="12" r="3.2" />
-                </svg>
+            <div className="min-h-[380px] h-full flex flex-col items-center justify-center text-center gap-5 pt-24">
+              <div
+                key={mode}
+                className="mode-pop text-accent-bright drop-shadow-[0_0_28px_rgba(124,58,237,0.55)]"
+              >
+                <ModeIcon mode={mode} size={64} />
               </div>
-              <div>
-                <p className="text-sm font-semibold text-ink/90">Your masterclass renders here</p>
-                <p className="mt-1.5 text-[13px] text-muted max-w-sm leading-relaxed">
-                  Pick a stack, describe a learning goal on the left, and hit{" "}
-                  <span className="text-neon font-medium">Generate Masterclass Path</span>. Retrieval runs on Neon,
-                  generation streams live from Gemini.
+              <div key={`${mode}-copy`} className="mode-pop">
+                <p className="font-display text-[19px] font-semibold tracking-tight text-ink">
+                  {MODE_META[mode].label}
+                </p>
+                <p className="mt-2 text-[13px] text-accent-bright/80 max-w-sm leading-relaxed">{MODE_META[mode].desc}</p>
+                <p className="mt-3 text-[12.5px] text-muted max-w-sm leading-relaxed">
+                  Pick a stack and describe a learning goal on the left. Retrieval runs on Neon, generation streams live
+                  from Gemini.
                 </p>
               </div>
+              <span className="inline-flex items-center gap-1.5 text-[11px] font-mono text-muted border border-edge rounded-full px-2.5 py-1">
+                <span className="h-1.5 w-1.5 rounded-full" style={{ background: framework.color }} />
+                {framework.label}
+              </span>
             </div>
           )}
 

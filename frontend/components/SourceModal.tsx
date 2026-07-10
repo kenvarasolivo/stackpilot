@@ -27,7 +27,7 @@ export default function SourceModal({ source, onClose }: Props) {
         <div className="shrink-0 flex items-center justify-between gap-4 px-5 py-4 border-b border-edge">
           <div className="min-w-0">
             <div className="flex items-center gap-2.5">
-              <span className="font-mono text-[9px] font-bold tracking-[0.08em] text-neon bg-neon/5 border border-neon/30 rounded px-1.5 py-0.5">
+              <span className="font-mono text-[9px] font-bold tracking-[0.08em] text-accent-bright bg-accent/5 border border-accent/30 rounded px-1.5 py-0.5">
                 SOURCE [{source.id}]
               </span>
               <h3 className="text-sm font-semibold truncate">{source.section_title}</h3>
@@ -36,7 +36,7 @@ export default function SourceModal({ source, onClose }: Props) {
               href={source.doc_url}
               target="_blank"
               rel="noreferrer"
-              className="mt-1 block text-[11px] font-mono text-muted truncate hover:text-neon transition-colors"
+              className="mt-1 block text-[11px] font-mono text-muted truncate hover:text-accent-bright transition-colors"
             >
               {source.doc_url}
             </a>
@@ -45,7 +45,7 @@ export default function SourceModal({ source, onClose }: Props) {
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="shrink-0 h-8 w-8 grid place-items-center rounded-md border border-edge text-muted hover:text-ink hover:border-muted/60 focus:outline-none focus-visible:border-neon/60 transition-colors"
+            className="shrink-0 h-8 w-8 grid place-items-center rounded-md border border-edge text-muted hover:text-ink hover:border-muted/60 focus:outline-none focus-visible:border-accent/60 transition-colors"
           >
             <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <path d="M18 6 6 18M6 6l12 12" />

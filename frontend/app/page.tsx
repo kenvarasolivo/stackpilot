@@ -28,6 +28,8 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [trace, setTrace] = useState<AgentTraceState>(emptyTrace());
   const [verification, setVerification] = useState<CitationCheck[]>([]);
+  // mode the current output was generated with (to flag a stale mode selection)
+  const [generatedMode, setGeneratedMode] = useState<Mode | null>(null);
 
   // nonce lets the same citation re-trigger the flash animation
   const [flash, setFlash] = useState<{ id: number; nonce: number } | null>(null);
@@ -44,6 +46,7 @@ export default function Home() {
     setFlash(null);
     setTrace(emptyTrace());
     setVerification([]);
+    setGeneratedMode(mode);
 
     await streamMasterclass(
       { framework: framework.id, mode, query: query.trim() || "Give me a practical masterclass on this framework's core architecture." },
@@ -90,9 +93,11 @@ export default function Home() {
         error={error}
         framework={framework}
         mode={mode}
+        generatedMode={generatedMode}
         trace={trace}
         citeIds={sources.map((s) => s.id)}
         onCite={handleCite}
+        onGenerate={handleGenerate}
       />
       <SourcesPanel
         status={status}

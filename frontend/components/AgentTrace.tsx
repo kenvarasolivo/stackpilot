@@ -31,7 +31,7 @@ export default function AgentTrace({ trace }: Props) {
               {i > 0 && (
                 <span
                   className={`h-px flex-1 mx-2 transition-colors duration-300 ${
-                    s.status !== "idle" ? "bg-neon/50" : "bg-edge"
+                    s.status !== "idle" ? "bg-accent/50" : "bg-edge"
                   }`}
                 />
               )}
@@ -39,9 +39,9 @@ export default function AgentTrace({ trace }: Props) {
                 <span
                   className={`h-5 w-5 grid place-items-center rounded-full border font-mono text-[9px] font-bold transition-all duration-300 ${
                     s.status === "done"
-                      ? "border-neon/60 bg-neon/10 text-neon"
+                      ? "border-accent/60 bg-accent/10 text-accent-bright"
                       : s.status === "running"
-                        ? "border-neon bg-neon/15 text-neon animate-pulse shadow-neon-soft"
+                        ? "border-accent bg-accent/15 text-accent-bright animate-pulse shadow-glow-soft"
                         : "border-edge bg-canvas text-muted/60"
                   }`}
                 >
@@ -55,7 +55,7 @@ export default function AgentTrace({ trace }: Props) {
                 </span>
                 <span
                   className={`text-[11px] font-semibold transition-colors ${
-                    s.status === "running" ? "text-neon" : s.status === "done" ? "text-ink/85" : "text-muted/60"
+                    s.status === "running" ? "text-accent-bright" : s.status === "done" ? "text-ink/85" : "text-muted/60"
                   }`}
                 >
                   {label}
@@ -70,7 +70,7 @@ export default function AgentTrace({ trace }: Props) {
         <div className="mt-2.5 border-t border-edge/60 pt-2 space-y-1">
           {activeDetail && (
             <p className="text-[11px] font-mono text-muted truncate">
-              <span className="text-neon/80">{activeDetail.label.toLowerCase()}</span> · {activeDetail.detail}
+              <span className="text-accent/90">{activeDetail.label.toLowerCase()}</span> · {activeDetail.detail}
             </p>
           )}
           {planQueries && planQueries.length > 0 && (

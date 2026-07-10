@@ -20,9 +20,9 @@ export default function CodeBlock({ language, code }: Props) {
   };
 
   return (
-    <figure className="mt-5 rounded-[10px] border border-edge bg-[#0A0E14] overflow-hidden shadow-lg shadow-black/30">
-      <div className="flex items-center justify-between gap-3 px-3 py-2 pl-4 bg-[#10151D] border-b border-[#21262D]">
-        <span className="font-mono text-[9.5px] font-bold uppercase tracking-[0.08em] text-neon bg-neon/5 border border-neon/25 rounded px-1.5 py-0.5">
+    <figure className="mt-5 rounded-[10px] border border-edge bg-[#08080A] overflow-hidden shadow-lg shadow-black/40">
+      <div className="flex items-center justify-between gap-3 px-3 py-2 pl-4 bg-[#101014] border-b border-edge">
+        <span className="font-mono text-[9.5px] font-bold uppercase tracking-[0.08em] text-accent-bright bg-accent/5 border border-accent/25 rounded px-1.5 py-0.5">
           {language || "code"}
         </span>
         <button
@@ -30,7 +30,7 @@ export default function CodeBlock({ language, code }: Props) {
           onClick={copy}
           className={`inline-flex items-center gap-1.5 font-mono text-[11px] font-semibold rounded-md border px-2.5 py-1 transition-all ${
             copied
-              ? "text-neon border-neon/45 bg-neon/5"
+              ? "text-accent-bright border-accent/45 bg-accent/5"
               : "text-muted border-edge hover:text-ink hover:border-muted/60"
           }`}
         >
@@ -41,7 +41,7 @@ export default function CodeBlock({ language, code }: Props) {
           {copied ? "Copied ✓" : "Copy Code"}
         </button>
       </div>
-      <pre className="p-4 overflow-x-auto panel-scroll font-mono text-[12.5px] leading-[1.7] text-[#C9D1D9]">
+      <pre className="p-4 overflow-x-auto panel-scroll font-mono text-[12.5px] leading-[1.7] text-[#D4D4DB]">
         <code dangerouslySetInnerHTML={{ __html: html }} />
       </pre>
     </figure>
