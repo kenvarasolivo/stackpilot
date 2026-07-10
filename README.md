@@ -80,19 +80,41 @@ npm run dev
 Then open **http://localhost:3000**. The footer of the left panel shows a live
 FastAPI connectivity indicator; interactive API docs are at http://localhost:8000/docs.
 
-## How a request flows
+## The agentic RAG pipeline
 
-1. **Generate Masterclass Path** POSTs `{framework, mode, query}` to `http://localhost:8000/api/masterclass`.
-2. FastAPI embeds the query with `gemini-embedding-001` and runs a cosine
-   similarity search (`embedding <=> query ORDER BY … LIMIT 4`) against
-   `framework_docs` on Neon, filtered by framework.
-3. The endpoint streams NDJSON: first a `sources` line with the retrieved rows,
-   then `delta` lines as **gemini-2.5-flash** streams the markdown tutorial,
-   then `done` (errors arrive in-band as an `error` line).
-4. The middle panel renders the markdown live (code blocks with copy buttons,
-   clickable `[n]` citations); the right panel shows the Neon source cards —
-   clicking a citation flashes the matching card, and **View Full Docs** opens
-   the raw retrieved context in an overlay.
+`POST /api/masterclass` runs a five-stage, self-correcting agent
+([backend/agent.py](backend/agent.py)); every stage is streamed to the UI as an
+NDJSON `agent` event and rendered live in the workspace's pipeline timeline:
+
+```
+plan ──▶ retrieve ──▶ grade ──▶ write ──▶ verify
+```
+
+1. **Plan** (`gemini-2.5-flash-lite`) — decomposes the (often vague) learning
+   goal into up to 3 targeted documentation search queries.
+2. **Retrieve** — each query is embedded with `gemini-embedding-001` and run as
+   a pgvector cosine search (`embedding <=> query`) against `framework_docs`
+   on Neon; results are deduped by row id and ranked by distance.
+3. **Grade** (`flash-lite`) — an LLM scores every chunk's relevance to the goal
+   (0/1/2), drops irrelevant ones, and if it detects a coverage gap it
+   formulates a refined query and retrieves from Neon again (bounded,
+   CRAG-style self-correction).
+4. **Write** (`gemini-2.5-flash`) — streams the markdown tutorial from the
+   graded context as `delta` events, with inline `[n]` citations.
+5. **Verify** (`flash-lite`) — audits every citation against its source chunk
+   and emits per-source verdicts (`supported` / `partial` / `unsupported`),
+   shown as badges on the source cards.
+
+Engineering notes: the small structured steps run on `flash-lite` (fast, cheap,
+separate free-tier rate bucket from the writer); every agent stage degrades
+gracefully to the naive RAG path if its model call fails (the trace shows why,
+e.g. "rate limited"); `generate_json` retries once on transient 429/503s.
+
+In the UI: the middle panel shows the live agent timeline, then renders the
+markdown as it streams (code blocks with copy buttons, clickable `[n]`
+citations); the right panel shows the graded Neon source cards with relevance
+percentages and verification badges — clicking a citation flashes the matching
+card, and **View Full Docs** opens the raw retrieved context in an overlay.
 
 ## Troubleshooting
 
