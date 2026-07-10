@@ -109,14 +109,14 @@ function Skyline({ dim = false }: { dim?: boolean }) {
       />
       <div
         className="lp-beam left-[63%]"
-        style={{ background: `linear-gradient(to top, rgba(124,58,237,0.2), transparent 68%)`, "--sway": "12s" } as CSSProperties}
+        style={{ background: `linear-gradient(to top, rgba(139,92,246,0.28), transparent 72%)`, "--sway": "12s" } as CSSProperties}
       />
       {/* city */}
       <SkylineLayer bars={LAYER_BACK} blur={14} opacity={0.65} drift={40} />
       <SkylineLayer bars={LAYER_MID} blur={6} opacity={0.92} drift={28} />
       <SkylineLayer bars={LAYER_FRONT} blur={1.6} opacity={1} drift={20} />
       {/* horizon glow */}
-      <div className="absolute inset-x-0 bottom-0 h-[38%] bg-[radial-gradient(60%_100%_at_50%_100%,rgba(124,58,237,0.3),rgba(59,130,246,0.14)_55%,transparent)]" />
+      <div className="absolute inset-x-0 bottom-0 h-[38%] bg-[radial-gradient(60%_100%_at_50%_100%,rgba(139,92,246,0.95),rgba(109,40,217,0.5)_40%,transparent_72%)]" />
       <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-accent/60 to-transparent" />
       {/* readability vignettes */}
       <div className="absolute inset-0 bg-gradient-to-r from-black via-black/45 to-transparent" />
@@ -134,7 +134,7 @@ const STRIP = [
   { lead: "Agentic pipeline.", body: "Five self-correcting stages: plan, retrieve, grade, write, verify." },
   { lead: "Live streaming.", body: "Stage progress, graded sources, and prose stream in over NDJSON." },
   { lead: "Verified citations.", body: "Every claim is audited against its source and gets a verdict badge." },
-  { lead: "Two modes.", body: "Deep-dive for conceptual depth, code-first for working examples." },
+  { lead: "Three modes.", body: "Deep-dive for concepts, code-first for working examples, comparison for stack trade-offs." },
   { lead: "Never fails silently.", body: "Model overloaded? It degrades to naive RAG — and tells you why." },
 ];
 
@@ -275,7 +275,7 @@ export default function Landing() {
       >
         <nav className="mx-auto flex h-16 max-w-[1400px] items-center justify-between px-6 lg:px-10">
           <Link href="/" className="flex items-center gap-2.5">
-            <span className="drop-shadow-[0_0_12px_rgba(124,58,237,0.55)]">
+            <span className="drop-shadow-[0_0_12px_rgba(139,92,246,0.7)]">
               <BrandMark size={26} />
             </span>
             <span className="font-display text-[17px] font-bold tracking-[-0.03em]">StackPilot</span>
@@ -459,10 +459,10 @@ export default function Landing() {
               </div>
             </Reveal>
 
-            {/* Two modes */}
+            {/* Three modes */}
             <Reveal className="lg:col-span-2">
               <div className="lp-card flex h-full flex-col rounded-2xl border border-edge bg-card p-7">
-                <h3 className="font-display text-xl font-bold tracking-[-0.02em]">Two ways to learn</h3>
+                <h3 className="font-display text-xl font-bold tracking-[-0.02em]">Three ways to learn</h3>
                 <p className="mt-2 text-[13.5px] leading-relaxed text-muted">
                   The same pipeline, tuned to how you think.
                 </p>
@@ -479,6 +479,13 @@ export default function Landing() {
                     <div>
                       <p className="text-[13px] font-semibold">Code-first</p>
                       <p className="text-[12px] leading-relaxed text-muted">Working examples first, with copy-ready blocks.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 rounded-lg border border-[#FACC15]/35 bg-[#FACC15]/[0.06] px-3.5 py-3">
+                    <span className="mt-0.5 text-[#FDE68A]"><ModeIcon mode="comparison" size={17} /></span>
+                    <div>
+                      <p className="text-[13px] font-semibold">Comparison</p>
+                      <p className="text-[12px] leading-relaxed text-muted">Two stacks head-to-head, ending in a clear recommendation.</p>
                     </div>
                   </div>
                 </div>
