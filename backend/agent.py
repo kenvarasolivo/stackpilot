@@ -25,6 +25,28 @@ import gemini_service
 MAX_SOURCES = 5
 RETRIEVE_PER_QUERY = 3
 
+# Human-readable names used in prompts; keys mirror the frontend's FRAMEWORKS ids.
+STACK_LABELS = {
+    "nextjs": "Next.js (App Router)",
+    "fastapi": "FastAPI",
+    "neon": "Neon Postgres",
+    "react-vite": "React + Vite",
+    "express": "Node.js + Express",
+    "django": "Django",
+    "fastapi-vite": "FastAPI + Vite",
+    "nextjs-fullstack": "Next.js + Node.js (full-stack)",
+}
+
+# Combo stacks also draw evidence from their building blocks in comparison mode.
+RELATED_STACKS = {
+    "fastapi-vite": ["fastapi", "react-vite"],
+    "nextjs-fullstack": ["nextjs", "express"],
+}
+
+
+def _label(key: str) -> str:
+    return STACK_LABELS.get(key, key)
+
 
 def _why(exc: Exception) -> str:
     """Short human-readable failure reason for the agent trace."""
@@ -47,10 +69,16 @@ def _agent(stage: str, status: str, detail: str = "", data: dict | None = None) 
 
 # ---------------------------------------------------------------- plan
 
-def _plan_queries(query: str, framework: str) -> list[str]:
+def _plan_queries(query: str, framework: str, mode: str) -> list[str]:
+    scope_line = (
+        f'developer documentation comparing "{framework}" against the alternative '
+        "stack(s) named in the goal — queries must cover BOTH sides of the comparison"
+        if mode == "comparison"
+        else f'developer documentation about "{framework}"'
+    )
     plan = gemini_service.generate_json(
-        f"""You are the retrieval planner of an agentic RAG system for developer
-documentation about "{framework}".
+        f"""You are the retrieval planner of an agentic RAG system for
+{scope_line}.
 
 Learning goal: {query}
 
@@ -139,11 +167,35 @@ Return STRICT JSON:
 
 # ---------------------------------------------------------------- orchestrator
 
-def run_masterclass_agent(framework: str, mode: str, query: str) -> Iterator[dict]:
+def run_masterclass_agent(
+    framework: str, mode: str, query: str, compare_to: str | None = None
+) -> Iterator[dict]:
+    # Comparison mode: with an explicit challenger, scope retrieval to both
+    # stacks (plus a combo's building blocks) and fold the matchup into the
+    # goal so the user only has to describe their use case. Without one,
+    # search every stack's docs and rely on the query naming both sides.
+    if mode == "comparison" and compare_to:
+        scope: str | list[str] | None = list(
+            dict.fromkeys(
+                [framework, compare_to]
+                + RELATED_STACKS.get(framework, [])
+                + RELATED_STACKS.get(compare_to, [])
+            )
+        )
+        query = (
+            f"Compare {_label(framework)} (Stack A) vs {_label(compare_to)} (Stack B) "
+            f"for this use case: {query}"
+        )
+        framework = f"{_label(framework)} vs {_label(compare_to)}"
+    elif mode == "comparison":
+        scope = None
+    else:
+        scope = framework
+
     # ---- plan ----
     yield _agent("plan", "start")
     try:
-        queries = _plan_queries(query, framework) or [query]
+        queries = _plan_queries(query, framework, mode) or [query]
         plan_detail = f"{len(queries)} search quer{'y' if len(queries) == 1 else 'ies'}"
     except Exception as exc:
         queries = [query]
@@ -154,7 +206,7 @@ def run_masterclass_agent(framework: str, mode: str, query: str) -> Iterator[dic
     yield _agent("retrieve", "start")
     by_id: dict[int, dict] = {}
     for q in queries:
-        for row in db.get_relevant_docs(framework, q, limit=RETRIEVE_PER_QUERY):
+        for row in db.get_relevant_docs(scope, q, limit=RETRIEVE_PER_QUERY):
             prev = by_id.get(row["id"])
             if prev is None or row["distance"] < prev["distance"]:
                 by_id[row["id"]] = row
@@ -163,8 +215,12 @@ def run_masterclass_agent(framework: str, mode: str, query: str) -> Iterator[dic
         yield {
             "type": "error",
             "message": (
-                f"No documentation rows found for framework '{framework}'. "
-                "Run `python seed.py` in /backend to create and populate the framework_docs table."
+                (
+                    "No documentation rows found in framework_docs. "
+                    if scope is None
+                    else f"No documentation rows found for framework '{framework}'. "
+                )
+                + "Run `python seed.py` in /backend to create and populate the framework_docs table."
             ),
         }
         return
@@ -187,7 +243,7 @@ def run_masterclass_agent(framework: str, mode: str, query: str) -> Iterator[dic
 
         refined = grade.get("refined_query")
         if isinstance(refined, str) and refined.strip() and len(kept) < MAX_SOURCES:
-            extra = db.get_relevant_docs(framework, refined.strip(), limit=2)
+            extra = db.get_relevant_docs(scope, refined.strip(), limit=2)
             known = {d["id"] for d in kept}
             added = [row for row in extra if row["id"] not in known]
             if added:
@@ -202,6 +258,7 @@ def run_masterclass_agent(framework: str, mode: str, query: str) -> Iterator[dic
     sources = [
         {
             "id": i + 1,
+            "framework_name": d.get("framework_name", ""),
             "section_title": d["section_title"],
             "doc_url": d["doc_url"],
             "raw_content": d["raw_content"],

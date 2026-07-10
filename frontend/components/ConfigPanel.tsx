@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { API_URL } from "@/lib/api";
 import { FRAMEWORKS, MODES, MODE_META, type Framework, type Mode } from "@/lib/types";
@@ -42,6 +43,13 @@ const MODE_PATHS: Record<Mode, React.ReactNode> = {
     </>
   ),
   "code-first": <path d="m8 7-5 5 5 5M16 7l5 5-5 5M13.5 4l-3 16" />,
+  comparison: (
+    <>
+      <path d="M12 3v18M7 21h10" />
+      <path d="M3 7h4c2 0 4-.7 5-1.5C13 6.3 15 7 17 7h4" />
+      <path d="m5 7-2.5 6a2.9 2.9 0 0 0 5 0L5 7ZM19 7l-2.5 6a2.9 2.9 0 0 0 5 0L19 7Z" />
+    </>
+  ),
 };
 
 /** Scalable stroke icon for a masterclass mode (inherits currentColor). */
@@ -87,17 +95,17 @@ export default function ConfigPanel({ framework, onFramework, mode, onMode, quer
       {/* Brand */}
       <header className="relative px-6 pt-7 pb-6 border-b border-edge/70 overflow-hidden">
         <div className="pointer-events-none absolute -top-16 -left-10 h-40 w-64 bg-[radial-gradient(closest-side,rgba(124,58,237,0.16),transparent)]" />
-        <div className="relative flex items-center gap-3.5">
-          <span className="shrink-0 drop-shadow-[0_0_14px_rgba(124,58,237,0.5)]">
+        <Link href="/" title="Back to the landing page" className="group relative flex items-center gap-3.5">
+          <span className="shrink-0 drop-shadow-[0_0_14px_rgba(124,58,237,0.5)] transition-transform group-hover:scale-105">
             <BrandMark size={36} />
           </span>
           <div>
-            <h1 className="font-display text-[20px] font-bold tracking-[-0.03em] leading-none text-ink">
+            <h1 className="font-display text-[20px] font-bold tracking-[-0.03em] leading-none text-ink transition-colors group-hover:text-accent-bright">
               StackPilot
             </h1>
             <p className="text-[9.5px] font-mono text-muted mt-2 tracking-[0.26em] uppercase">Framework Masterclass</p>
           </div>
-        </div>
+        </Link>
       </header>
 
       <div className="flex-1 px-6 py-6 space-y-7">
@@ -207,7 +215,11 @@ export default function ConfigPanel({ framework, onFramework, mode, onMode, quer
             rows={6}
             value={query}
             onChange={(e) => onQuery(e.target.value)}
-            placeholder="e.g., Explain how to set up multi-tenant row-level security using Neon pgvector and Next.js..."
+            placeholder={
+              mode === "comparison"
+                ? "Describe only your use case — the stacks are picked in the workspace. e.g., A SaaS dashboard with real-time charts, a small team, SEO matters..."
+                : "e.g., Explain how to set up multi-tenant row-level security using Neon pgvector and Next.js..."
+            }
             className="mt-2.5 w-full resize-none rounded-lg bg-card border border-edge px-3.5 py-3 text-sm leading-relaxed placeholder:text-muted/60 focus:outline-none focus:border-accent/60 focus:shadow-glow-soft transition-colors panel-scroll"
           />
         </section>

@@ -103,11 +103,26 @@ def _build_prompt(query: str, framework: str, mode: str, docs: list[dict]) -> st
         f"[{i + 1}] \"{d['section_title']}\" ({d['doc_url']})\n{d['raw_content']}"
         for i, d in enumerate(docs)
     )
-    mode_hint = (
-        "Code-First Tutorial: lead with complete, runnable code blocks; keep prose terse and practical."
-        if mode == "code-first"
-        else "Architectural Deep-Dive: explain concepts, tradeoffs and failure modes; use code to illustrate."
-    )
+    if mode == "code-first":
+        mode_hint = "Code-First Tutorial: lead with complete, runnable code blocks; keep prose terse and practical."
+    elif mode == "comparison":
+        mode_hint = (
+            "Stack Comparison: contrast the two stacks named in the learning goal head-to-head. "
+            "Early on, include ONE summary comparison table in syntactically valid GitHub-flavored "
+            "Markdown, exactly this shape (header row, then the `| --- |` separator row on its own "
+            "line, then one row per line):\n"
+            "| Aspect | <Stack A> | <Stack B> |\n"
+            "| --- | --- | --- |\n"
+            "| Developer experience | <short cell> | <short cell> |\n"
+            "with one row each for developer experience, performance & first paint, SEO, ecosystem, "
+            "API reusability, and deployment. Keep every cell under 12 words — no bullet lists or "
+            "multiple sentences inside cells. Put the detailed pros and cons in bulleted sections "
+            "AFTER the table, relate everything to the use case in the goal, and end with a clear "
+            "'Choose X if… / Choose Y if…' recommendation section. Stay even-handed; ground every "
+            "claim in the retrieved context."
+        )
+    else:
+        mode_hint = "Architectural Deep-Dive: explain concepts, tradeoffs and failure modes; use code to illustrate."
     return f"""You are StackPilot, an AI framework masterclass engine. You answer ONLY from
 the retrieved documentation context below and cite it with footnote markers.
 

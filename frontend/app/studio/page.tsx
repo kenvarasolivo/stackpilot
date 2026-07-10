@@ -19,6 +19,10 @@ import {
 
 export default function Home() {
   const [framework, setFramework] = useState<Framework>(FRAMEWORKS[0]);
+  // challenger stack for comparison mode (defaults to FastAPI + Vite vs the Next.js default)
+  const [compareTo, setCompareTo] = useState<Framework>(
+    () => FRAMEWORKS.find((f) => f.id === "fastapi-vite") ?? FRAMEWORKS[1]
+  );
   const [mode, setMode] = useState<Mode>("deep-dive");
   const [query, setQuery] = useState("");
 
@@ -48,8 +52,20 @@ export default function Home() {
     setVerification([]);
     setGeneratedMode(mode);
 
+    // In comparison mode the stacks come from the selectors, so the query only
+    // needs the use case; the backend composes the full "A vs B" goal.
+    const fallbackQuery =
+      mode === "comparison"
+        ? "a typical production web application"
+        : "Give me a practical masterclass on this framework's core architecture.";
+
     await streamMasterclass(
-      { framework: framework.id, mode, query: query.trim() || "Give me a practical masterclass on this framework's core architecture." },
+      {
+        framework: framework.id,
+        mode,
+        query: query.trim() || fallbackQuery,
+        ...(mode === "comparison" ? { compare_to: compareTo.id } : {}),
+      },
       {
         onAgent: (stage, state) =>
           setTrace((prev) => ({
@@ -69,7 +85,13 @@ export default function Home() {
         },
       }
     );
-  }, [busy, framework.id, mode, query]);
+  }, [busy, framework.id, mode, query, compareTo.id]);
+
+  // keep the challenger distinct from the primary stack
+  const handleFramework = useCallback((f: Framework) => {
+    setFramework(f);
+    setCompareTo((prev) => (prev.id === f.id ? FRAMEWORKS.find((x) => x.id !== f.id)! : prev));
+  }, []);
 
   const handleCite = useCallback((id: number) => {
     setFlash({ id, nonce: Date.now() });
@@ -79,7 +101,7 @@ export default function Home() {
     <div className="flex h-screen overflow-hidden">
       <ConfigPanel
         framework={framework}
-        onFramework={setFramework}
+        onFramework={handleFramework}
         mode={mode}
         onMode={setMode}
         query={query}
@@ -92,6 +114,8 @@ export default function Home() {
         markdown={markdown}
         error={error}
         framework={framework}
+        compareTo={compareTo}
+        onCompareTo={setCompareTo}
         mode={mode}
         generatedMode={generatedMode}
         trace={trace}

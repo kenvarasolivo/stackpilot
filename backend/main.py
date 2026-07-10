@@ -54,7 +54,7 @@ def masterclass(req: MasterclassRequest) -> StreamingResponse:
 
     def ndjson():
         try:
-            for event in agent.run_masterclass_agent(req.framework, req.mode, req.query):
+            for event in agent.run_masterclass_agent(req.framework, req.mode, req.query, req.compare_to):
                 yield json.dumps(event) + "\n"
         except Exception as exc:  # surfaced verbatim in the UI's error card
             yield json.dumps({"type": "error", "message": str(exc)}) + "\n"

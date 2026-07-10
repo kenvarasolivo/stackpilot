@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import type { CitationCheck, SourceDoc, Status } from "@/lib/types";
+import { FRAMEWORKS, type CitationCheck, type SourceDoc, type Status } from "@/lib/types";
 
 interface Props {
   status: Status;
@@ -14,9 +14,15 @@ interface Props {
 function fileTag(url: string): string {
   if (url.includes("neon.tech")) return "SQL";
   if (url.includes("fastapi")) return "PY";
+  if (url.includes("djangoproject")) return "PY";
   if (url.includes("nextjs")) return "TS";
+  if (url.includes("vite.dev")) return "TS";
+  if (url.includes("react.dev")) return "TSX";
+  if (url.includes("expressjs")) return "JS";
   return "MD";
 }
+
+const STACK_BY_ID = new Map(FRAMEWORKS.map((f) => [f.id, f]));
 
 const VERDICT_STYLE: Record<CitationCheck["verdict"], { label: string; cls: string }> = {
   supported: { label: "✓ verified", cls: "text-emerald-300 border-emerald-300/40 bg-emerald-300/5" },
@@ -106,9 +112,26 @@ export default function SourcesPanel({ status, sources, flash, verification, onV
                 {fileTag(s.doc_url)}
               </span>
             </div>
+            {s.framework_name && STACK_BY_ID.has(s.framework_name) && (
+              <span className="mt-1.5 inline-flex items-center gap-1.5 text-[9.5px] font-mono text-muted">
+                <span
+                  className="h-1.5 w-1.5 rounded-full shrink-0"
+                  style={{ background: STACK_BY_ID.get(s.framework_name)!.color }}
+                />
+                {STACK_BY_ID.get(s.framework_name)!.label}
+              </span>
+            )}
             <p className="mt-2 text-[11.5px] leading-relaxed text-muted line-clamp-2">{s.raw_content}</p>
             <div className="mt-2 flex items-center justify-between gap-2">
-              <p className="text-[10px] font-mono text-muted/60 truncate">{s.doc_url}</p>
+              <a
+                href={s.doc_url}
+                target="_blank"
+                rel="noreferrer"
+                title="Open the official documentation"
+                className="text-[10px] font-mono text-muted/60 truncate hover:text-accent-bright hover:underline transition-colors"
+              >
+                {s.doc_url}
+              </a>
               {typeof s.relevance === "number" && (
                 <span className="shrink-0 text-[9.5px] font-mono text-accent/90" title="cosine similarity to the planned query">
                   {(s.relevance * 100).toFixed(0)}% match

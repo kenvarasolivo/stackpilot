@@ -575,6 +575,7 @@ export default function Landing() {
             <a href="#pipeline" className="transition-colors hover:text-ink">Pipeline</a>
             <a href="#features" className="transition-colors hover:text-ink">Features</a>
             <a href="#stack" className="transition-colors hover:text-ink">Stack</a>
+            <Link href="/impressum" className="transition-colors hover:text-ink">Impressum</Link>
             <Link href="/studio" className="text-accent-bright transition-colors hover:text-ink">Studio →</Link>
           </div>
         </div>

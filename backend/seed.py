@@ -208,6 +208,319 @@ DOCS: list[dict] = [
             "the failure mode you want in a multi-tenant system."
         ),
     },
+    # ---------------- React + Vite ----------------
+    {
+        "framework_name": "react-vite",
+        "section_title": "Dev Server, HMR and Fast Refresh",
+        "doc_url": "https://vite.dev/guide/features",
+        "raw_content": (
+            "Vite serves source files over native ES modules, transforming them on demand "
+            "instead of bundling the whole app up front — so dev server start is near-instant "
+            "regardless of project size. Dependencies are pre-bundled once with esbuild. Hot "
+            "Module Replacement swaps edited modules in place, and the React plugin adds Fast "
+            "Refresh so component edits apply without losing component state. Production "
+            "builds go through Rollup instead, so dev and prod use different pipelines: "
+            "always smoke-test the built output with vite preview before shipping, since "
+            "dev-only behavior (like unbundled import order) can differ."
+        ),
+    },
+    {
+        "framework_name": "react-vite",
+        "section_title": "Env Variables and Modes",
+        "doc_url": "https://vite.dev/guide/env-and-mode",
+        "raw_content": (
+            "Vite loads .env, .env.local and .env.[mode] files and exposes variables to "
+            "client code via import.meta.env — but only those prefixed with VITE_. Values "
+            "are statically replaced at build time, so changing them requires a rebuild. "
+            "Because a Vite SPA ships entirely to the browser, there is no server-only "
+            "place for secrets: API keys and database URLs must live in a backend service, "
+            "and the frontend should only hold public configuration like VITE_API_URL "
+            "pointing at that backend. Built-in constants import.meta.env.DEV and .PROD "
+            "distinguish dev server from production build."
+        ),
+    },
+    {
+        "framework_name": "react-vite",
+        "section_title": "Proxying API Requests in Development",
+        "doc_url": "https://vite.dev/config/server-options.html#server-proxy",
+        "raw_content": (
+            "server.proxy in vite.config.ts forwards matching dev-server paths to a backend, "
+            "e.g. proxy: { '/api': { target: 'http://localhost:8000', changeOrigin: true } }. "
+            "The browser then only ever talks to the Vite origin (localhost:5173), so no CORS "
+            "configuration is needed during development. rewrite can strip or remap the path "
+            "prefix if the backend routes differ. The proxy exists only in the dev server: in "
+            "production the same effect needs either a reverse proxy serving frontend and API "
+            "from one origin, or CORS headers on the API for the frontend's deployed origin."
+        ),
+    },
+    {
+        "framework_name": "react-vite",
+        "section_title": "Building for Production and SPA Fallback",
+        "doc_url": "https://vite.dev/guide/build",
+        "raw_content": (
+            "vite build emits an optimized static bundle to dist/ using Rollup: code-split "
+            "chunks, hashed filenames for long-term caching, and CSS extraction. The result "
+            "is plain static files deployable to any static host or CDN — no Node server "
+            "required. For apps using client-side routing (React Router), the host must "
+            "rewrite unknown paths to index.html, otherwise deep links 404 on refresh. The "
+            "base config option sets the public path when deploying under a sub-path. Use "
+            "vite preview to serve the production build locally for a final check."
+        ),
+    },
+    # ---------------- Node.js + Express ----------------
+    {
+        "framework_name": "express",
+        "section_title": "Routing and Routers",
+        "doc_url": "https://expressjs.com/en/guide/routing.html",
+        "raw_content": (
+            "Express maps HTTP methods and paths to handler functions: app.get('/users/:id', "
+            "handler) captures path segments in req.params, with query strings parsed into "
+            "req.query. Routes match in registration order, so put specific routes before "
+            "catch-alls. express.Router() creates modular, mountable route groups — define "
+            "user routes in their own router and attach it with app.use('/api/users', "
+            "router), keeping large APIs organized by resource. A handler that neither sends "
+            "a response nor calls next() leaves the request hanging; always end with res.json, "
+            "res.send, res.status().end() or next()."
+        ),
+    },
+    {
+        "framework_name": "express",
+        "section_title": "Middleware Pipeline",
+        "doc_url": "https://expressjs.com/en/guide/using-middleware.html",
+        "raw_content": (
+            "Nearly everything in Express is middleware: functions (req, res, next) executed "
+            "in the order they are registered with app.use or on individual routes. Built-in "
+            "express.json() parses JSON bodies into req.body and must be registered before "
+            "routes that read it. Cross-origin browsers need the cors package: "
+            "app.use(cors({ origin: 'http://localhost:5173' })) for a Vite frontend. "
+            "Middleware either ends the response or calls next() to pass control on; "
+            "ordering bugs (auth after routes, body parser after handlers) are the most "
+            "common Express mistakes. Router-level middleware scopes concerns like auth "
+            "to one mounted router."
+        ),
+    },
+    {
+        "framework_name": "express",
+        "section_title": "Error Handling",
+        "doc_url": "https://expressjs.com/en/guide/error-handling.html",
+        "raw_content": (
+            "Express error handlers are middleware with four arguments: (err, req, res, "
+            "next), registered after all routes. Synchronous throws are caught "
+            "automatically; in Express 5, rejected promises from async handlers are also "
+            "forwarded to error middleware automatically, while Express 4 required calling "
+            "next(err) manually or a wrapper like express-async-errors. A central error "
+            "handler should map known error types to status codes, log the full error "
+            "server-side, and return a sanitized JSON body — never leak stack traces in "
+            "production. If headers were already sent, delegate to the default handler "
+            "with next(err)."
+        ),
+    },
+    {
+        "framework_name": "express",
+        "section_title": "Production Best Practices",
+        "doc_url": "https://expressjs.com/en/advanced/best-practice-performance.html",
+        "raw_content": (
+            "Run with NODE_ENV=production: it enables view caching and faster behavior "
+            "worth roughly 3x throughput in Express itself. Never block the single-threaded "
+            "event loop — avoid synchronous fs/crypto APIs in handlers. Use a process "
+            "manager (PM2, systemd) or the cluster module to use all CPU cores and restart "
+            "on crashes. Offload gzip compression and TLS to a reverse proxy like Nginx "
+            "when possible. Handle uncaught rejections by crashing and restarting rather "
+            "than continuing in an unknown state, and add security headers with helmet."
+        ),
+    },
+    # ---------------- Django ----------------
+    {
+        "framework_name": "django",
+        "section_title": "URL Dispatcher and Views",
+        "doc_url": "https://docs.djangoproject.com/en/5.2/topics/http/urls/",
+        "raw_content": (
+            "Django routes requests through URLconf modules: urlpatterns lists of path() "
+            "entries mapping URL patterns to view callables, with typed converters like "
+            "<int:pk> passed as keyword arguments to the view. include() composes per-app "
+            "URLconfs into the project URLconf, keeping apps reusable. Views take an "
+            "HttpRequest and return an HttpResponse (or JsonResponse for APIs); "
+            "class-based views like ListView and DetailView package common patterns. "
+            "Naming routes with name= and reversing them with reverse()/url template tags "
+            "keeps URLs refactorable — hardcoded paths are the thing to avoid."
+        ),
+    },
+    {
+        "framework_name": "django",
+        "section_title": "The ORM and QuerySets",
+        "doc_url": "https://docs.djangoproject.com/en/5.2/topics/db/queries/",
+        "raw_content": (
+            "Django models are Python classes mapped to tables; Model.objects returns a "
+            "manager whose filter(), exclude() and get() build QuerySets. QuerySets are "
+            "lazy — no SQL runs until iteration, slicing or len() — and chainable, so views "
+            "can compose filters conditionally. Field lookups use double underscores: "
+            "filter(author__name__icontains='ada'), spanning relations with joins. The "
+            "classic performance trap is N+1 queries when looping over related objects: "
+            "select_related() (SQL join for foreign keys) and prefetch_related() (separate "
+            "query for many-to-many) fetch relations up front. Aggregation uses annotate() "
+            "and aggregate() with Count, Sum and friends."
+        ),
+    },
+    {
+        "framework_name": "django",
+        "section_title": "Migrations",
+        "doc_url": "https://docs.djangoproject.com/en/5.2/topics/migrations/",
+        "raw_content": (
+            "Django derives schema changes from model code: makemigrations diffs models "
+            "against migration history and writes migration files; migrate applies them to "
+            "the database, recording state in the django_migrations table. Migration files "
+            "are code — commit them to version control and review them like any other "
+            "change. RunPython operations handle data migrations (backfills) alongside "
+            "schema changes. Because each migration depends on its predecessors, parallel "
+            "branches can conflict; makemigrations --merge resolves divergent histories. "
+            "Test destructive migrations against realistic data (a database branch or "
+            "staging copy) before running them in production."
+        ),
+    },
+    {
+        "framework_name": "django",
+        "section_title": "Settings and Environment Configuration",
+        "doc_url": "https://docs.djangoproject.com/en/5.2/topics/settings/",
+        "raw_content": (
+            "All Django configuration lives in the settings module named by "
+            "DJANGO_SETTINGS_MODULE. Secrets (SECRET_KEY, database credentials) should be "
+            "read from environment variables rather than hardcoded, e.g. via os.environ or "
+            "a .env loader, with different settings files or env overlays per environment. "
+            "DEBUG=True must never ship to production: it exposes detailed error pages and "
+            "disables ALLOWED_HOSTS checking. ALLOWED_HOSTS lists the domains the app may "
+            "serve. Access settings via django.conf.settings instead of importing the "
+            "module directly, so overrides and test settings keep working."
+        ),
+    },
+    # ---------------- Combo: FastAPI + Vite ----------------
+    {
+        "framework_name": "fastapi-vite",
+        "section_title": "Wiring a Vite Frontend to a FastAPI Backend",
+        "doc_url": "https://fastapi.tiangolo.com/tutorial/cors/",
+        "raw_content": (
+            "The FastAPI + Vite stack runs two dev servers: Vite on localhost:5173 serving "
+            "the React app, uvicorn on localhost:8000 serving the API. Bridge them one of "
+            "two ways: add CORSMiddleware to FastAPI allowing the Vite origin, or configure "
+            "Vite's server.proxy to forward /api requests to :8000 so the browser sees a "
+            "single origin. The frontend reads the deployed API base URL from a VITE_API_URL "
+            "env variable; secrets stay on the FastAPI side. FastAPI's automatic OpenAPI "
+            "schema at /openapi.json doubles as the API contract — TypeScript client types "
+            "can be generated from it so both codebases stay in sync."
+        ),
+    },
+    {
+        "framework_name": "fastapi-vite",
+        "section_title": "Serving the Vite Build from FastAPI",
+        "doc_url": "https://fastapi.tiangolo.com/tutorial/static-files/",
+        "raw_content": (
+            "For single-origin deployments, FastAPI can serve the compiled frontend: mount "
+            "StaticFiles(directory='dist', html=True) at '/' AFTER registering API routes, "
+            "so /api/* keeps resolving to endpoints while everything else falls through to "
+            "the SPA's index.html. html=True makes the mount serve index.html for the root; "
+            "client-side routes still need a catch-all that returns index.html so deep "
+            "links survive refresh. This collapses the deployment to one process and "
+            "removes CORS entirely — the trade-off is coupling frontend releases to "
+            "backend deploys and giving up CDN edge caching for static assets."
+        ),
+    },
+    {
+        "framework_name": "fastapi-vite",
+        "section_title": "When to Choose FastAPI + Vite: Strengths and Trade-offs",
+        "doc_url": "https://fastapi.tiangolo.com/alternatives/",
+        "raw_content": (
+            "FastAPI + Vite is a decoupled SPA-plus-API architecture. Strengths: the backend "
+            "gets Python's ecosystem (ML, data science, async SQL), Pydantic validation and "
+            "auto-generated OpenAPI docs; the frontend gets Vite's fastest-in-class dev "
+            "loop; the two deploy and scale independently, and the API is reusable by "
+            "mobile or third-party clients from day one. Trade-offs: two codebases in two "
+            "languages with duplicated types unless you generate clients from OpenAPI; "
+            "CORS and auth (cookie vs bearer-token) complexity; and no server-side "
+            "rendering — first paint waits for the JS bundle and SEO needs extra work, "
+            "which is where full-stack SSR frameworks like Next.js have the edge."
+        ),
+    },
+    {
+        "framework_name": "fastapi-vite",
+        "section_title": "Deploying the Decoupled Pair",
+        "doc_url": "https://fastapi.tiangolo.com/deployment/concepts/",
+        "raw_content": (
+            "The natural deployment splits the pair: the Vite build's dist/ goes to a "
+            "static host or CDN (Vercel, Netlify, Cloudflare Pages) while FastAPI runs as a "
+            "server process — uvicorn behind a process manager or gunicorn with uvicorn "
+            "workers — on a host like Render, Fly.io or a container platform. The frontend "
+            "build bakes in VITE_API_URL pointing at the API's public URL, and the API's "
+            "CORS allowlist must include the frontend's deployed origin. Give the API a "
+            "/health endpoint for the platform's checks, terminate HTTPS at the platform "
+            "proxy, and remember replication: run multiple workers or instances since one "
+            "async process still has one event loop."
+        ),
+    },
+    # ---------------- Combo: Next.js + Node.js (full-stack) ----------------
+    {
+        "framework_name": "nextjs-fullstack",
+        "section_title": "One Codebase, Two Halves: Server Actions and Route Handlers",
+        "doc_url": "https://nextjs.org/docs/app/getting-started/mutating-data",
+        "raw_content": (
+            "Next.js makes Node.js the backend without a separate server project. Server "
+            "Actions — async functions marked 'use server' — are called from components "
+            "like ordinary functions but execute on the server, covering form submissions "
+            "and mutations without hand-writing fetch calls or API endpoints; Next.js "
+            "handles the wire format and revalidation (revalidatePath/revalidateTag). "
+            "Route Handlers remain the tool for public HTTP APIs consumed by external "
+            "clients. Because frontend and backend share one TypeScript project, request "
+            "and response types flow end-to-end with no OpenAPI generation step — the "
+            "compiler is the API contract."
+        ),
+    },
+    {
+        "framework_name": "nextjs-fullstack",
+        "section_title": "Running Next.js on a Node.js Server",
+        "doc_url": "https://nextjs.org/docs/app/getting-started/deploying",
+        "raw_content": (
+            "Next.js deploys two main ways. On serverless platforms like Vercel, each "
+            "route becomes an isolated function — zero-ops scaling, but execution time "
+            "limits and cold starts constrain long-running work. Self-hosting runs next "
+            "build then next start as a persistent Node.js server; output: 'standalone' "
+            "emits a minimal server bundle ideal for Docker images. A persistent Node "
+            "process supports long-lived connections and background work that serverless "
+            "cannot, at the cost of managing scaling yourself. Either way the same "
+            "codebase serves SSR pages, Server Actions and API routes — one deploy "
+            "artifact for the whole app."
+        ),
+    },
+    {
+        "framework_name": "nextjs-fullstack",
+        "section_title": "When to Choose Next.js Full-Stack: Strengths and Trade-offs",
+        "doc_url": "https://nextjs.org/docs/app",
+        "raw_content": (
+            "Next.js as a full-stack framework means one language, one repository and one "
+            "deployment for UI and API. Strengths: server-side rendering and streaming "
+            "give fast first paint and strong SEO out of the box; no CORS since frontend "
+            "and API share an origin; TypeScript types shared end-to-end; Server "
+            "Components keep data access and secrets off the client. Trade-offs: the "
+            "backend is locked to the JavaScript runtime — CPU-heavy or Python-ecosystem "
+            "work (ML inference, data pipelines) fits a dedicated service better; the API "
+            "is not naturally reusable by mobile or third-party clients the way a "
+            "standalone REST service is; and you are committed to React and to the App "
+            "Router's caching model, which has a real learning curve."
+        ),
+    },
+    {
+        "framework_name": "nextjs-fullstack",
+        "section_title": "Pairing Next.js with a Separate Node.js API via Rewrites",
+        "doc_url": "https://nextjs.org/docs/app/api-reference/config/next-config-js/rewrites",
+        "raw_content": (
+            "When the backend outgrows Route Handlers — WebSockets, heavy background jobs, "
+            "or a team that wants an independent API service — Next.js pairs cleanly with "
+            "a separate Node.js server (Express or Fastify). rewrites() in next.config "
+            "proxies paths like /api/:path* to the external API's URL, so the browser "
+            "still sees a single origin and no CORS setup is needed, while the API "
+            "deploys and scales on its own. This is the incremental escape hatch: start "
+            "full-stack in one Next.js app, then extract hot endpoints to the standalone "
+            "service without changing frontend code. Rewrites are invisible to the "
+            "client, unlike redirects, and can also route by header or cookie."
+        ),
+    },
 ]
 
 
@@ -255,7 +568,7 @@ def main() -> None:
                         db.to_vector_literal(embedding),
                     ),
                 )
-                print(f"  [{i:2}/{len(DOCS)}] {doc['framework_name']:8} - {doc['section_title']}")
+                print(f"  [{i:2}/{len(DOCS)}] {doc['framework_name']:16} - {doc['section_title']}")
         conn.commit()
     print("Done. The /api/masterclass endpoint is ready to retrieve.")
 

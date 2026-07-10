@@ -1,6 +1,6 @@
 # StackPilot ⚡
 
-An agentic AI documentation masterclass dashboard for developers: pick a framework (Next.js, FastAPI, or Neon), describe what you want to learn, and StackPilot plans, retrieves, grades, and streams a fully cited tutorial built from real documentation.
+An agentic AI documentation masterclass dashboard for developers: pick a stack (Next.js, FastAPI, Neon, React + Vite, Node.js + Express, Django — or a combo like FastAPI + Vite or Next.js + Node.js), describe what you want to learn, and StackPilot plans, retrieves, grades, and streams a fully cited tutorial built from real documentation.
 
 ---
 
@@ -9,7 +9,7 @@ An agentic AI documentation masterclass dashboard for developers: pick a framewo
 *   **Agentic RAG Pipeline:** A five-stage, self-correcting agent — `plan → retrieve → grade → write → verify` — decomposes your learning goal into targeted searches, drops irrelevant chunks, refines queries on coverage gaps (CRAG-style), and audits every citation against its source.
 *   **Live Streaming Workspace:** Agent stage progress, graded source cards, and the markdown tutorial all stream to the browser in real time over NDJSON — code blocks with copy buttons, clickable `[n]` citations that flash the matching source card.
 *   **Verified Citations:** Every citation gets a `supported` / `partial` / `unsupported` verdict badge, so you can trust what the tutorial claims.
-*   **Two Learning Modes:** *Deep-dive* for conceptual depth or *code-first* for example-driven tutorials.
+*   **Three Learning Modes:** *Deep-dive* for conceptual depth, *code-first* for example-driven tutorials, or *comparison* for a head-to-head pros/cons verdict between stacks (e.g. FastAPI + Vite vs Next.js + Node.js) — comparison mode searches every stack's docs so both sides are backed by sources.
 *   **Graceful Degradation:** If any agent stage's model call fails (rate limit, overload), the pipeline falls back to the naive RAG path instead of failing the request — the trace shows why.
 
 ---

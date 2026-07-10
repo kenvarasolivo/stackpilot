@@ -1,5 +1,7 @@
 export interface SourceDoc {
   id: number;
+  /** which stack this chunk belongs to — useful in comparison mode */
+  framework_name?: string;
   section_title: string;
   doc_url: string;
   raw_content: string;
@@ -48,7 +50,7 @@ export interface Framework {
   color: string;
 }
 
-export type Mode = "deep-dive" | "code-first";
+export type Mode = "deep-dive" | "code-first" | "comparison";
 
 export interface ModeMeta {
   id: Mode;
@@ -70,6 +72,12 @@ export const MODES: ModeMeta[] = [
     short: "Code-First",
     desc: "Hands-on and runnable from the first section — the how, in working code.",
   },
+  {
+    id: "comparison",
+    label: "Stack Comparison",
+    short: "Comparison",
+    desc: "Head-to-head pros and cons against an alternative stack, ending in a clear recommendation.",
+  },
 ];
 
 export const MODE_META: Record<Mode, ModeMeta> = Object.fromEntries(
@@ -82,10 +90,17 @@ export interface MasterclassRequest {
   framework: string;
   mode: Mode;
   query: string;
+  /** second stack key, sent in comparison mode — the query then only needs the use case */
+  compare_to?: string;
 }
 
 export const FRAMEWORKS: Framework[] = [
   { id: "nextjs", label: "Next.js (App Router)", sub: "v15", color: "#F2F2F4" },
   { id: "fastapi", label: "FastAPI", sub: "0.115", color: "#2DD4BF" },
   { id: "neon", label: "Neon Postgres", sub: "pg17", color: "#00E599" },
+  { id: "react-vite", label: "React + Vite", sub: "v19/v6", color: "#61DAFB" },
+  { id: "express", label: "Node.js + Express", sub: "v5", color: "#8CC84B" },
+  { id: "django", label: "Django", sub: "5.2", color: "#44B78B" },
+  { id: "fastapi-vite", label: "FastAPI + Vite", sub: "combo", color: "#818CF8" },
+  { id: "nextjs-fullstack", label: "Next.js + Node.js", sub: "combo", color: "#F59E0B" },
 ];

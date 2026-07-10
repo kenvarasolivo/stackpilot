@@ -1,6 +1,6 @@
 "use client";
 
-import { MODE_META, type AgentTraceState, type Framework, type Mode, type Status } from "@/lib/types";
+import { FRAMEWORKS, MODE_META, type AgentTraceState, type Framework, type Mode, type Status } from "@/lib/types";
 import AgentTrace from "./AgentTrace";
 import { ModeIcon } from "./ConfigPanel";
 import MasterclassMarkdown from "./MasterclassMarkdown";
@@ -10,6 +10,9 @@ interface Props {
   markdown: string;
   error: string | null;
   framework: Framework;
+  /** challenger stack for comparison mode */
+  compareTo: Framework;
+  onCompareTo: (f: Framework) => void;
   mode: Mode;
   /** mode the current output was generated with; null before the first run */
   generatedMode: Mode | null;
@@ -40,9 +43,10 @@ function Skeleton() {
   );
 }
 
-export default function Workspace({ status, markdown, error, framework, mode, generatedMode, trace, citeIds, onCite, onGenerate }: Props) {
+export default function Workspace({ status, markdown, error, framework, compareTo, onCompareTo, mode, generatedMode, trace, citeIds, onCite, onGenerate }: Props) {
   const busy = status === "loading" || status === "streaming";
   const staleMode = status === "done" && generatedMode !== null && generatedMode !== mode;
+  const isComparison = mode === "comparison";
 
   return (
     <main className="relative w-1/2 flex flex-col h-full bg-canvas border-r border-edge">
@@ -67,7 +71,9 @@ export default function Workspace({ status, markdown, error, framework, mode, ge
           </div>
           {/* Live selection readout — re-animates whenever the mode changes */}
           <div className="flex items-center gap-2 min-w-0">
-            <span className="text-[11px] text-muted font-mono truncate">{framework.label}</span>
+            <span className="text-[11px] text-muted font-mono truncate">
+              {isComparison ? `${framework.label} vs ${compareTo.label}` : framework.label}
+            </span>
             <span
               key={mode}
               className="mode-pop shrink-0 inline-flex items-center gap-1.5 text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full border border-accent/40 text-accent-bright bg-accent/10"
@@ -84,6 +90,43 @@ export default function Workspace({ status, markdown, error, framework, mode, ge
       {/* Feed */}
       <div className="relative flex-1 overflow-y-auto panel-scroll px-7 lg:px-10 py-8">
         <div className="max-w-[720px] mx-auto">
+          {/* Comparison matchup bar — the challenger is picked here, so the
+              learning goal only needs to describe the use case */}
+          {isComparison && (
+            <div className="rise-in mb-6 flex flex-wrap items-center gap-3 rounded-xl border border-edge bg-card/60 px-4 py-3">
+              <span className="text-[10.5px] font-semibold tracking-[0.14em] uppercase text-muted">Comparing</span>
+              <span className="inline-flex items-center gap-1.5 text-[12px] font-medium border border-edge rounded-lg px-2.5 py-1.5 bg-card">
+                <span className="h-1.5 w-1.5 rounded-full shrink-0" style={{ background: framework.color }} />
+                {framework.label}
+              </span>
+              <span className="text-[11px] font-mono font-bold text-accent-bright">vs</span>
+              <div className="relative">
+                <select
+                  value={compareTo.id}
+                  onChange={(e) => onCompareTo(FRAMEWORKS.find((f) => f.id === e.target.value)!)}
+                  aria-label="Stack to compare against"
+                  className="appearance-none cursor-pointer rounded-lg bg-card border border-edge pl-6 pr-8 py-1.5 text-[12px] font-medium text-ink hover:border-muted/60 focus:outline-none focus:border-accent/60 focus:shadow-glow-soft transition-colors"
+                >
+                  {FRAMEWORKS.filter((f) => f.id !== framework.id).map((f) => (
+                    <option key={f.id} value={f.id}>
+                      {f.label}
+                    </option>
+                  ))}
+                </select>
+                <span
+                  className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 h-1.5 w-1.5 rounded-full"
+                  style={{ background: compareTo.color }}
+                />
+                <svg
+                  className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                >
+                  <path d="m6 9 6 6 6-6" />
+                </svg>
+              </div>
+            </div>
+          )}
+
           {/* Mode changed after generation — offer a one-click regenerate */}
           {staleMode && (
             <div className="rise-in mb-6 flex items-center justify-between gap-4 rounded-xl border border-accent/35 bg-accent/[0.06] px-4 py-3">
@@ -119,13 +162,21 @@ export default function Workspace({ status, markdown, error, framework, mode, ge
                 </p>
                 <p className="mt-2 text-[13px] text-accent-bright/80 max-w-sm leading-relaxed">{MODE_META[mode].desc}</p>
                 <p className="mt-3 text-[12.5px] text-muted max-w-sm leading-relaxed">
-                  Pick a stack and describe a learning goal on the left. Retrieval runs on Neon, generation streams live
-                  from Gemini.
+                  {isComparison
+                    ? "Pick the challenger stack above and describe your use case on the left — no need to name the frameworks in your goal."
+                    : "Pick a stack and describe a learning goal on the left. Retrieval runs on Neon, generation streams live from Gemini."}
                 </p>
               </div>
               <span className="inline-flex items-center gap-1.5 text-[11px] font-mono text-muted border border-edge rounded-full px-2.5 py-1">
                 <span className="h-1.5 w-1.5 rounded-full" style={{ background: framework.color }} />
                 {framework.label}
+                {isComparison && (
+                  <>
+                    <span className="text-accent-bright font-bold">vs</span>
+                    <span className="h-1.5 w-1.5 rounded-full" style={{ background: compareTo.color }} />
+                    {compareTo.label}
+                  </>
+                )}
               </span>
             </div>
           )}

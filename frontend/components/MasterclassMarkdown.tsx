@@ -47,6 +47,14 @@ function MasterclassMarkdown({ markdown, citeIds, onCite }: Props) {
     li: ({ children }) => <li>{withCitations(children, valid, onCite)}</li>,
     strong: ({ children }) => <strong>{withCitations(children, valid, onCite)}</strong>,
     em: ({ children }) => <em>{withCitations(children, valid, onCite)}</em>,
+    th: ({ children }) => <th>{withCitations(children, valid, onCite)}</th>,
+    td: ({ children }) => <td>{withCitations(children, valid, onCite)}</td>,
+    // horizontal scroll for wide comparison tables instead of overflowing the feed
+    table: ({ children }) => (
+      <div className="overflow-x-auto">
+        <table>{children}</table>
+      </div>
+    ),
     // unwrap <pre>; the code component below decides block vs inline
     pre: ({ children }) => <>{children}</>,
     code: ({ className, children }) => {
