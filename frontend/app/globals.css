@@ -198,6 +198,104 @@
 .md-feed th, .md-feed td { border: 1px solid #232329; padding: 7px 12px; text-align: left; }
 .md-feed th { background: #0d0d10; color: #f2f2f4; font-weight: 600; }
 
+/* =========================================================
+   Landing page (lp-*)
+   ========================================================= */
+html { scroll-behavior: smooth; }
+
+/* ---------- Skyline: parallax layers of flickering light towers ---------- */
+.lp-layer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -4%;
+  right: -4%;
+  animation: lp-drift var(--drift, 70s) ease-in-out infinite alternate;
+  will-change: transform;
+}
+@keyframes lp-drift {
+  from { transform: translateX(-1.4%); }
+  to   { transform: translateX(1.4%); }
+}
+
+.lp-bar {
+  position: absolute;
+  bottom: 0;
+  border-radius: 2px 2px 0 0;
+  -webkit-mask-image: linear-gradient(to top, black 52%, rgba(0, 0, 0, 0.4) 80%, transparent 100%);
+  mask-image: linear-gradient(to top, black 52%, rgba(0, 0, 0, 0.4) 80%, transparent 100%);
+  animation-name: lp-flicker, lp-windows;
+  animation-timing-function: ease-in-out, linear;
+  animation-iteration-count: infinite, infinite;
+}
+/* Window banks glow and dim like occupied floors switching over */
+@keyframes lp-flicker {
+  0%, 100% { opacity: var(--o-max, 0.9); }
+  38%      { opacity: var(--o-min, 0.35); }
+  55%      { opacity: var(--o-max, 0.9); }
+  73%      { opacity: var(--o-min, 0.35); }
+}
+/* Slow vertical crawl of the window rows */
+@keyframes lp-windows {
+  from { background-position-y: 0; }
+  to   { background-position-y: -64px; }
+}
+
+/* Searchlight beams sweeping behind the skyline */
+.lp-beam {
+  position: absolute;
+  bottom: -10%;
+  width: clamp(180px, 22vw, 360px);
+  height: 110%;
+  transform-origin: bottom center;
+  animation: lp-sway var(--sway, 26s) ease-in-out infinite alternate;
+  pointer-events: none;
+}
+@keyframes lp-sway {
+  from { transform: rotate(-7deg); opacity: 0.55; }
+  50%  { opacity: 1; }
+  to   { transform: rotate(7deg); opacity: 0.55; }
+}
+
+/* ---------- Scroll reveal ---------- */
+.lp-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.75s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.75s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition-delay: var(--rd, 0s);
+}
+.lp-reveal.is-in { opacity: 1; transform: none; }
+
+/* ---------- Pipeline connector: current flowing left -> right ---------- */
+.lp-flow {
+  height: 2px;
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgba(167, 139, 250, 0.65) 0 12px,
+    rgba(96, 165, 250, 0.35) 12px 24px,
+    transparent 24px 38px
+  );
+  animation: lp-flow 1.6s linear infinite;
+}
+@keyframes lp-flow { to { background-position-x: 38px; } }
+
+/* ---------- Premium card hover ---------- */
+.lp-card {
+  transition: border-color 200ms ease, box-shadow 260ms ease, transform 260ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.lp-card:hover {
+  border-color: rgba(167, 139, 250, 0.45);
+  box-shadow: 0 0 0 1px rgba(167, 139, 250, 0.18), 0 12px 42px rgba(124, 58, 237, 0.14);
+  transform: translateY(-3px);
+}
+
+/* ---------- Motion opt-out ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .lp-layer, .lp-bar, .lp-beam, .lp-flow { animation: none !important; }
+  .lp-reveal { transition: none; opacity: 1; transform: none; }
+}
+
 /* Streaming caret */
 @keyframes caret-blink { 0%, 55% { opacity: 1; } 56%, 100% { opacity: 0; } }
 .stream-caret {

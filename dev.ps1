@@ -4,8 +4,8 @@
 $root = $PSScriptRoot
 
 Start-Process powershell -ArgumentList @(
-  "-NoExit", "-Command",
-  "cd '$root\backend'; if (Test-Path .venv) { .\.venv\Scripts\Activate.ps1 }; uvicorn main:app --reload --port 8000"
+  "-NoExit", "-ExecutionPolicy", "Bypass", "-Command",
+  "cd '$root\backend'; if (Test-Path .venv\Scripts\python.exe) { & .\.venv\Scripts\python.exe -m uvicorn main:app --reload --port 8000 } else { Write-Host 'No .venv found - see README: python -m venv .venv; pip install -r requirements.txt' -ForegroundColor Red }"
 )
 
 Start-Process powershell -ArgumentList @(
