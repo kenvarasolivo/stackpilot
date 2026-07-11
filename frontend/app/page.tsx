@@ -309,7 +309,14 @@ export default function Landing() {
             className="rise-in mt-7 max-w-[15ch] font-display text-[44px] font-bold leading-[1.05] tracking-[-0.035em] text-ink sm:text-[64px] lg:text-[80px]"
             style={{ animationDelay: "180ms" }}
           >
-            StackPilot is the masterclass engine built on real documentation.
+            <span className="bg-gradient-to-b from-white from-45% via-[#c4b5fd] via-70% to-[#a78bfa] bg-clip-text text-transparent">
+              StackPilot
+            </span>{" "}
+            is the{" "}
+            <span className="bg-gradient-to-b from-white from-45% via-[#c4b5fd] via-70% to-[#a78bfa] bg-clip-text text-transparent">
+              masterclass engine
+            </span>{" "}
+            built on real documentation.
           </h1>
 
           <p className="rise-in mt-7 max-w-xl text-[17px] leading-relaxed text-muted" style={{ animationDelay: "300ms" }}>
