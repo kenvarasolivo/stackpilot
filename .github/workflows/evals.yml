@@ -1,0 +1,67 @@
+name: Evals
+
+on:
+  push:
+  pull_request:
+
+# A newer push supersedes an in-flight run on the same ref.
+concurrency:
+  group: evals-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  eval-harness:
+    name: Eval harness (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: backend/requirements-dev.txt
+
+      - name: Install dependencies
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      # The offline tier only. It stubs out Gemini and Neon, so this job needs
+      # no secrets, spends no API quota, and makes no network calls — the suite
+      # enforces that last part itself (tests/conftest.py::no_network fails any
+      # outbound connection from a test not marked `live`). The `live` tier is
+      # deselected here and run locally with `pytest -m live`.
+      #
+      # This job is deliberately given no `secrets:` and no `env:` block.
+      - name: Run eval harness
+        working-directory: backend
+        run: pytest -m "not live" --junitxml=eval-junit.xml
+
+      - name: Publish metrics to the job summary
+        if: always()
+        working-directory: backend
+        run: |
+          if [ -f eval-report.md ]; then
+            cat eval-report.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No eval report produced — the suite failed before recording metrics." \
+              >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload eval report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-report-py${{ matrix.python-version }}
+          path: |
+            backend/eval-report.md
+            backend/eval-report.json
+            backend/eval-junit.xml
+          if-no-files-found: warn

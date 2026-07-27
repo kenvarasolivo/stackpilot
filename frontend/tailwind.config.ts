@@ -6,15 +6,20 @@ const config: Config = {
     extend: {
       colors: {
         canvas: "#000000",
-        card: "#0D0D10",
-        edge: "#232329",
-        ink: "#F2F2F4",
-        muted: "#8F8F9B",
+        // Neutral greys carry the UI; purple is a spice, not a base.
+        card: "#0A0A0B",
+        edge: "#1D1D20",
+        ink: "#F5F5F7",
+        muted: "#8A8A93",
         accent: {
-          DEFAULT: "#A78BFA",
-          bright: "#B794FF",
-          deep: "#7C3AED",
+          DEFAULT: "#7C3AED",
+          bright: "#A78BFA",
+          deep: "#4C1D95",
         },
+        // Status only — never decoration.
+        ok: "#4ADE80",
+        warn: "#FBBF24",
+        bad: "#F87171",
       },
       fontFamily: {
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],
@@ -22,8 +27,8 @@ const config: Config = {
         mono: ["var(--font-mono)", "ui-monospace", "monospace"],
       },
       boxShadow: {
-        glow: "0 0 0 1px rgba(167,139,250,.35), 0 0 24px rgba(124,58,237,.18)",
-        "glow-soft": "0 0 16px rgba(124,58,237,.16)",
+        glow: "0 0 0 1px rgba(124,58,237,.45)",
+        "glow-soft": "0 0 0 1px rgba(124,58,237,.28)",
       },
     },
   },

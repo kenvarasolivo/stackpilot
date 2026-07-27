@@ -12,6 +12,12 @@ next-env.d.ts.bak
 venv/
 __pycache__/
 *.pyc
+.pytest_cache/
+
+# eval harness output (regenerated on every run; CI publishes it as an artifact)
+backend/eval-report.md
+backend/eval-report.json
+backend/eval-junit.xml
 
 # misc
 .DS_Store
