@@ -24,8 +24,14 @@ function mulberry32(seed: number) {
 
 const GREY_DIM = "#3A3A42";
 const GREY = "#5C5C68";
-const WHITE = "#D6D6DE";
-const PURPLE = "#7C3AED";
+/* Kept below the purples' luminance: white bars sit next to purple ones and the
+   blur mixes them, so a bright white here desaturates its neighbours to lavender. */
+const WHITE = "#B4B4BE";
+/* Brightness here has to come from saturation, not lightness. #A78BFA reads
+   violet as thin dashboard text on black, but as a wide blurred field it reads
+   near-white — so the workhorse is the more chromatic #8B5CF6, and #A78BFA is
+   demoted to a sparse highlight. */
+const PURPLE = "#8B5CF6";
 const VIOLET = "#A78BFA";
 
 interface Bar {
@@ -45,16 +51,35 @@ function makeBars(seed: number, count: number, hMin: number, hMax: number): Bar[
   const slot = 100 / count;
   return Array.from({ length: count }, (_, i) => {
     const roll = rnd();
-    const c =
-      roll < 0.42 ? GREY_DIM : roll < 0.72 ? GREY : roll < 0.86 ? PURPLE : roll < 0.95 ? WHITE : VIOLET;
+    /* `lift` keeps the accent pillars from sinking into the grey field: the
+       purples ride at a higher opacity floor so they stay lit through the dip
+       of the flicker cycle instead of dropping out. */
+    let c: string;
+    let lift: number;
+    if (roll < 0.32) {
+      c = GREY_DIM;
+      lift = 0;
+    } else if (roll < 0.56) {
+      c = GREY;
+      lift = 0.04;
+    } else if (roll < 0.89) {
+      c = PURPLE;
+      lift = 0.26;
+    } else if (roll < 0.94) {
+      c = WHITE;
+      lift = 0.06;
+    } else {
+      c = VIOLET;
+      lift = 0.26;
+    }
     return {
       left: i * slot + rnd() * slot * 0.7,
       w: 0.4 + rnd() * 0.95,
       h: hMin + rnd() * (hMax - hMin),
       c,
       seg: 3 + Math.floor(rnd() * 3),
-      oMax: 0.62 + rnd() * 0.3,
-      oMin: 0.18 + rnd() * 0.22,
+      oMax: Math.min(1, 0.66 + rnd() * 0.3 + lift),
+      oMin: Math.min(0.92, 0.24 + rnd() * 0.22 + lift),
       dur: 2.6 + rnd() * 4.8,
       delay: -rnd() * 12,
     };
@@ -108,9 +133,9 @@ function ArtLayer({
 function HeroArt({ dim = false }: { dim?: boolean }) {
   return (
     <div className={`lp-art lp-grain ${dim ? "opacity-40" : ""}`} aria-hidden="true">
-      <ArtLayer bars={LAYER_BACK} blur={12} opacity={0.5} drift={44} />
-      <ArtLayer bars={LAYER_MID} blur={5} opacity={0.8} drift={30} />
-      <ArtLayer bars={LAYER_FRONT} blur={1.4} opacity={1} drift={22} />
+      <ArtLayer bars={LAYER_BACK} blur={11} opacity={0.66} drift={44} />
+      <ArtLayer bars={LAYER_MID} blur={4} opacity={0.92} drift={30} />
+      <ArtLayer bars={LAYER_FRONT} blur={1.2} opacity={1} drift={22} />
     </div>
   );
 }
